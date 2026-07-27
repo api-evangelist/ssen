@@ -1,0 +1,344 @@
+aid: ssen
+name: Scottish and Southern Electricity Networks
+review:
+  question: Does SSEN publish real, documented, reachable APIs — and is any consumer
+    energy-data mandate actually implemented?
+  answer: true
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  homeMarket: United Kingdom
+  tier: network-distributor
+  scope: |
+    Bootstrap review of SSEN (SSE plc electricity networks). Covers both licensed
+    businesses that trade under the SSEN brand — SSEN Distribution (the DNO for the
+    SHEPD and SEPD licence areas) and SSEN Transmission (the north of Scotland
+    transmission owner). Every URL below was probed on 2026-07-27 and the HTTP
+    status recorded verbatim.
+
+energyMandate:
+  regime: smart-meter-infrastructure
+  status: live-implemented
+  homeMarket: United Kingdom
+  regimeVerbatim: |
+    Great Britain mandated the INFRASTRUCTURE and the DISCLOSURE, not a consumer
+    data right. Two obligations touch SSEN and neither is a portability right:
+
+      1. Smart metering infrastructure. GB smart meter traffic runs over the Smart
+         Data Communications Company (DCC), a licensed monopoly governed by the
+         Smart Energy Code. SSEN as a DNO takes smart meter data through that
+         infrastructure via what it calls its "smart meter adapter" (stated in the
+         Smart Meter LV Feeder Usage dataset description on data.ssen.co.uk).
+
+      2. Ofgem Data Best Practice. Under the RIIO-ED2 price control (from April
+         2023) network licensees carry a licence condition requiring compliance with
+         Ofgem's Data Best Practice Guidance, whose core principle is "Presumed
+         Open" data subject to Open Data Triage. This is an OPEN DATA publishing
+         obligation on the network company, not a right vested in a consumer.
+
+    There is NO Great Britain equivalent of the Australian Consumer Data Right for
+    energy, and no Green Button regulation of the Ontario kind. Nothing compels SSEN
+    to expose an individual customer's usage or billing data to an accredited third
+    party, and SSEN publishes no such API.
+  statusEvidence: |
+    Marked live-implemented for the obligations that actually apply, and the
+    evidence is an artifact, not a claim:
+      - Smart Meter LV Feeder Usage dataset is published and live on the portal
+        (HTTP 200), sourced from smart meters through the DCC route and anonymised
+        by aggregation to no fewer than 5 properties per LV feeder. SSEN was the
+        first GB DNO to publish full smart meter half-hourly consumption datasets.
+      - Open Data Triage under Data Best Practice is evidenced directly: multiple
+        CKAN datasets carry a published "SSEN Data Triage record" PDF resource
+        (e.g. external-data-triage-ecr-artefact.pdf on the Embedded Capacity
+        Register, external-data-triage-form-sims-powertrack-artefact-pdf.pdf on the
+        Real Time Outage Dataset).
+      - Datasets are licensed CC BY 4.0 (license_id CC-BY-4.0 returned by the CKAN
+        package_show API), which is what a Presumed Open regime is supposed to
+        produce.
+    IMPORTANT — this verified implementation is of an infrastructure and open-data
+    obligation ONLY. It must not be read as a consumer data right being implemented.
+    No CDR-style register entry, no accredited-data-recipient flow, and no consumer
+    consent surface exists here because none is mandated in GB.
+  notMandated:
+    - Consumer data portability / account data API — no GB mandate, none published.
+    - Green Button / ESPI — no reference found anywhere on SSEN properties.
+    - Consumer Data Standards (energy) — Australian only, not applicable.
+
+dataStandard:
+  answer: no consumer data standard reference found
+  detail: |
+    No Green Button/ESPI, no CDR Consumer Data Standards, no IEEE 2030.5, no
+    OpenADR, no OCPP/OCPI, and no explicit IEC CIM 61968/61970 conformance claim was
+    found on any SSEN property probed. The standards that ARE in play are GB
+    industry data formats and platform conventions rather than API specifications:
+      - Embedded Capacity Register in the format agreed through the Energy Networks
+        Association Open Networks project (register v4.0), published as XLSX/CSV.
+      - Long Term Development Statement (LTDS) and Distribution Future Energy
+        Scenarios (DFES) — GB regulatory reporting formats, published as files.
+      - DCAT — the CKAN portal runs the dcat and dcat_json_interface extensions, and
+        the Opendatasoft portal exposes /catalog/exports/dcat (HTTP 200), so catalog
+        metadata is DCAT-shaped.
+      - CC BY 4.0 licensing across most datasets.
+    API shape is platform-vendor conventional, not sector-standard: CKAN 2.10.10
+    Action API for Distribution, Opendatasoft Explore API v2.1 for Transmission, and
+    two bespoke SSEN-built APIs (Power Track outages, NeRDA power flow).
+
+consumerVsMarketData:
+  consumer_data_api: false
+  market_data_open: true
+  split: |
+    This is the finding. SSEN is wide open on grid/market data and completely absent
+    on consumer data — and that is exactly what the GB regime asks of it.
+
+    MARKET / GRID DATA — OPEN. 45 CKAN datasets on the Distribution portal and 60
+    Opendatasoft datasets on the Transmission portal, both queryable anonymously
+    over documented platform APIs, mostly CC BY 4.0. Includes substation locations,
+    Embedded Capacity Register, flexibility day-ahead bidding and dispatch reports,
+    flexibility services contract register, generation availability and network
+    capacity, GIS network line data, GSP/BSP supply area boundaries, LTDS, DFES
+    technology projections, NAFIRS HV/LV fault data, Orkney and Isle of Wight active
+    network management, real-time outages, and ETYS transmission circuits and fault
+    levels.
+
+    CONSUMER DATA — NOT OFFERED. SSEN publishes no API for an individual customer's
+    usage, billing, tariff or account data, and no third-party consent flow. The one
+    place customer-derived data appears is the Smart Meter LV Feeder Usage dataset,
+    and it is deliberately de-individualised — aggregated to a minimum of 5
+    properties per LV feeder, published as bulk open data. That is the opposite of a
+    consumer data right: it is customer data turned into grid data before release.
+    As a DNO, SSEN also has no retail relationship with most end customers; the
+    supplier does, and GB gives that customer no statutory API-based portability
+    right against either party.
+
+accessGate:
+  gate: self-serve
+  gatedOverall: false
+  whatADeveloperMustDo: |
+    For three of the four APIs — nothing. No account, no key, no application, no
+    licence signature:
+      - Distribution CKAN Action API: call https://data-api.ssen.co.uk/api/3/action/*
+        anonymously. Verified HTTP 200 for status_show, package_list (45 packages),
+        package_show and help_show. NOTE a WAF quirk — requests with a default curl
+        User-Agent get HTTP 403; a normal browser User-Agent gets 200. There is no
+        credential involved, only bot filtering.
+      - Power Track Real Time Outage API: call
+        https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api/getallfaults
+        anonymously. Verified HTTP 200, application/json, 17KB of live faults, plus
+        /getbyid/{reference} HTTP 200.
+      - Transmission Explore API: call
+        https://ssentransmission.opendatasoft.com/api/explore/v2.1/* anonymously.
+        Verified HTTP 200 with total_count 60.
+    For NeRDA only, the gate is a free self-serve registration:
+      1. Create or sign in to an SSEN account from nerda.ssen.co.uk.
+      2. Accept the NeRDA Portal terms and conditions (mandatory, blocking).
+      3. Open "View APIs and Manage Keys" in the portal API console and click
+         Regenerate to mint an API key (shown once; regenerating clears the old key).
+      SSEN also lists SSENSmart@sse.com for API access enquiries. There is no
+      accreditation, no commercial agreement, and no approval committee.
+
+authModel:
+  schemes:
+    - api: SSEN Distribution Data Portal API (CKAN)
+      auth: none for read
+      note: |
+        CKAN 2.10.10. Anonymous read verified. The instance loads the "noanonaccess"
+        extension, which gates the HTML dataset pages on data-api.ssen.co.uk (HTTP
+        403 for /, /catalog.jsonld, /openapi.json, /swagger.json) while the /api/3
+        Action API answers anonymously. Human browsing happens on the separate
+        Next.js front end at data.ssen.co.uk (HTTP 200). Writes would need a CKAN API
+        token, but no public write is offered.
+    - api: SSEN Power Track Real Time Outage API
+      auth: none
+      note: Public read-only JSON, no key observed, no rate-limit headers documented.
+    - api: SSEN NeRDA API
+      auth: API key
+      note: |
+        Per the official NeRDA API Guide PDF — key generated in the portal API
+        console after account creation and T&C acceptance, and the APIs also work
+        in-browser while a portal session is open. Anonymous calls to the documented
+        endpoints (/api/nerdastatic-SEPD, /api/nerdastatic-SEPD/2521) returned HTTP
+        404 after redirect to nerda.ssen.co.uk. A 2023 SSEN update refers to moving
+        API authentication to a bearer token; the current published guide describes
+        an API key, so the key model is what is recorded here.
+    - api: SSEN Transmission Open Data Explore API
+      auth: optional API key
+      note: |
+        The harvested OpenAPI declares one security scheme — apiKey named "apikey"
+        in query — used for private datasets. Public catalog and record reads
+        succeed anonymously.
+  oidc:
+    probed: https://www.ssen.co.uk/.well-known/openid-configuration
+    status: 404
+    note: No anonymously served OpenID Connect discovery document found on the
+      primary domain. NeRDA registration redirects to an SSEN login portal, but no
+      public OIDC metadata is exposed.
+
+probes:
+  - url: https://www.ssen.co.uk/
+    status: 200
+    note: Corporate site. Links to the Data Portal, Power Track and Tools and maps.
+  - url: https://data.ssen.co.uk/
+    status: 200
+    note: SSEN Distribution Data Portal front end (Next.js). Human-facing portal.
+  - url: https://data.ssen.co.uk/api
+    status: 404
+  - url: https://data.ssen.co.uk/documentation
+    status: 404
+  - url: https://data-api.ssen.co.uk/
+    status: 403
+    note: HTML gated by the CKAN noanonaccess extension.
+  - url: https://data-api.ssen.co.uk/api/3/action/status_show
+    status: 200
+    note: CKAN 2.10.10, site_title "SSEN Data Portal". Anonymous with browser UA.
+  - url: https://data-api.ssen.co.uk/api/3/action/package_list
+    status: 200
+    note: 45 datasets returned.
+  - url: https://data-api.ssen.co.uk/api/3/action/help_show?name=package_search
+    status: 200
+  - url: https://data-api.ssen.co.uk/openapi.json
+    status: 403
+    note: No OpenAPI published for the CKAN API.
+  - url: https://data-api.ssen.co.uk/swagger.json
+    status: 403
+  - url: https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api/getallfaults
+    status: 200
+    note: Live outage JSON, 17,057 bytes, timestampUtc 2026-07-27T12:56:00Z.
+  - url: https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api/getbyid/TS5673
+    status: 200
+  - url: https://external.distribution.prd.ssen.co.uk/opendataportal-prd/swagger/v1/swagger.json
+    status: 404
+    note: No OpenAPI published for the Power Track API.
+  - url: https://powertrack.ssen.co.uk/powertrack
+    status: 200
+  - url: https://nerda.ssen.co.uk/
+    status: 200
+    note: NeRDA dashboard. nerda.opengrid.com redirects here.
+  - url: https://nerda.opengrid.com/api/nerdastatic-SEPD
+    status: 404
+    note: Documented endpoint, not reachable anonymously — key/session required.
+  - url: https://nerda.opengrid.com/api/nerdastatic-SEPD/2521
+    status: 404
+  - url: https://nerda.ssen.co.uk/swagger.json
+    status: 404
+  - url: https://nerda.ssen.co.uk/openapi.json
+    status: 404
+  - url: https://ssentransmission.opendatasoft.com/
+    status: 200
+    note: Redirects to /pages/homepage/. Official SSEN Transmission Open Data Portal,
+      linked from www.ssen-transmission.co.uk.
+  - url: https://ssentransmission.opendatasoft.com/api/explore/v2.1/swagger.json
+    status: 200
+    note: HARVESTED — OpenAPI 3.0.3, 16 paths.
+  - url: https://ssentransmission.opendatasoft.com/api/explore/v2.1/catalog/datasets
+    status: 200
+    note: total_count 60, datasets CC BY 4.0.
+  - url: https://ssentransmission.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+    status: 200
+    note: DCAT catalog export.
+  - url: https://ssentransmission.opendatasoft.com/api-console/explore/v2.1/
+    status: 200
+    note: Interactive API console.
+  - url: https://www.ssen-transmission.co.uk/
+    status: 200
+  - url: https://ssen-innovation.co.uk/
+    status: 200
+  - url: https://developer.ssen.co.uk/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://developers.ssen.co.uk/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://api.ssen.co.uk/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://docs.ssen.co.uk/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://www.ssen.co.uk/openapi.json
+    status: 404
+  - url: https://www.ssen.co.uk/swagger.json
+    status: 404
+  - url: https://www.ssen.co.uk/.well-known/openid-configuration
+    status: 404
+
+harvested:
+  - path: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+    sourceURL: https://ssentransmission.opendatasoft.com/api/explore/v2.1/swagger.json
+    fetchDate: '2026-07-27'
+    httpStatus: 200
+    contentType: application/json
+    format: OpenAPI 3.0.3
+    title: Explore API
+    version: v2.1
+    server: https://ssentransmission.opendatasoft.com/api/explore/v2.1
+    pathCount: 16
+    validated: parses as JSON; openapi field is 3.0.3
+    note: |
+      Verbatim as served. This is the Opendatasoft Explore API v2.1 contract served
+      from SSEN Transmission's own portal host with SSEN's server URL baked in — a
+      platform-vendor spec, not an SSEN-authored one. Recorded as such so it is not
+      mistaken for a bespoke SSEN API design.
+
+findings:
+  summary: |
+    SSEN is a genuinely open network distributor with four reachable APIs, three of
+    them anonymous, and exactly zero consumer-facing data APIs. That is not a gap in
+    SSEN's programme — it is the shape of the Great Britain regime. Britain mandated
+    the infrastructure (the DCC smart meter monopoly) and the disclosure (Ofgem Data
+    Best Practice "Presumed Open" under RIIO-ED2), and never mandated a consumer
+    data right. SSEN implements what it was actually told to implement, and the
+    evidence is verifiable — published Open Data Triage records attached to
+    datasets, CC BY 4.0 licensing, and the first GB DNO publication of full smart
+    meter half-hourly consumption data, aggregated to a 5-property floor so no
+    individual customer is identifiable. The mandate/implementation distinction that
+    breaks other markets does not bite here because the mandate never promised
+    consumer access in the first place.
+  onlyOneSpec: |
+    Only one machine-readable contract exists and SSEN did not write it. The
+    Transmission portal inherits Opendatasoft's OpenAPI; the Distribution CKAN
+    Action API is self-describing via help_show but ships no OpenAPI; the Power Track
+    outage API and the NeRDA API are bespoke SSEN builds documented only in prose —
+    a dataset page and a 12-page PDF guide respectively. Four APIs, one spec, and the
+    one spec is the vendor's.
+  twoPortalsTwoPlatforms: |
+    The SSEN brand covers two licensed businesses that made independent platform
+    choices — Distribution on CKAN (data.ssen.co.uk front end, data-api.ssen.co.uk
+    backend) and Transmission on Opendatasoft. There is no unified SSEN developer
+    portal, no developer.* subdomain, and no single catalog spanning both.
+
+sources:
+  - url: https://data.ssen.co.uk/
+    type: Portal
+    note: SSEN Distribution Data Portal, 45 datasets.
+  - url: https://ssentransmission.opendatasoft.com/
+    type: Portal
+    note: SSEN Transmission Open Data Portal, 60 datasets.
+  - url: https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/
+    type: Documentation
+    note: NeRDA portal description and API access statement.
+  - url: https://data-api.ssen.co.uk/dataset/195500da-46ae-4698-939c-f7f4293f7b43/resource/c90db7e1-c666-4092-998c-b71d782b16db/download/nerda-api-guide.pdf
+    type: APIReference
+    note: Official NeRDA API Guide (12 pages) — account creation, T&C, API key
+      generation, nerdastatic / nerdart_after / nerdart_between endpoints.
+  - url: https://data.ssen.co.uk/@ssen-distribution/realtime_outage_dataset
+    type: Documentation
+    note: Real Time Outage Dataset, CC BY 4.0, lists the Power Track API resource.
+  - url: https://data.ssen.co.uk/@ssen-distribution/ssen_smart_meter_prod_lv_feeder
+    type: Documentation
+    note: Smart Meter LV Feeder Usage — aggregation to no fewer than 5 properties,
+      collected through SSEN's smart meter adapter.
+  - url: https://www.ssen.co.uk/news-views/2024/SSEN-first-DNO-publish-smart-meter-half-hourly-consumption-datasets
+    type: Blog
+    note: SSEN claim of being first DNO to publish full smart meter half-hourly
+      consumption datasets.
+  - url: https://www.ofgem.gov.uk/sites/default/files/2021-11/Data_Best_Practice_Guidance_v1.pdf
+    type: Regulation
+    note: Ofgem Data Best Practice Guidance — Presumed Open and Open Data Triage.
+
+actions:
+  apisYmlCreated: true
+  apisListed: 4
+  openapiHarvested: 1
+  readmeCreated: true
+  reason: |
+    Bootstrap only — identity, honest public-API inventory and spec harvest. No
+    fabricated hosts, endpoints, scopes or specs. Enrichment runs separately.
