@@ -24,7 +24,7 @@ description: Scottish and Southern Electricity Networks (SSEN) is the SSE plc el
   visibly — it became the first DNO to publish full smart meter half-hourly consumption
   data, aggregated to no fewer than five properties per LV feeder, and attaches published
   Open Data Triage records to its datasets.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+image: https://www.ssen.co.uk/apple-touch-icon.png
 tags:
 - Energy
 - United Kingdom
@@ -130,13 +130,73 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+  - type: Overlay
+    url: overlays/ssen-transmission-opendatasoft-explore-v2.1-overlay.yaml
   - type: Documentation
     url: https://ssentransmission.opendatasoft.com/
   - type: APIReference
     url: https://ssentransmission.opendatasoft.com/api-console/explore/v2.1/
+  - type: Console
+    url: https://ssentransmission.opendatasoft.com/api/explore/v2.1/console
+  - type: Support
+    url: https://ssentransmission.opendatasoft.com/pages/faqs/
+  - type: SecurityTxt
+    url: well-known/ssen-security.txt
   - type: Website
     url: https://www.ssen-transmission.co.uk/
 common:
+- type: AgenticAccess
+  url: agentic-access/ssen-agentic-access.yml
+- type: DomainSecurity
+  url: security/ssen-domain-security.yml
+- type: Authentication
+  url: authentication/ssen-authentication.yml
+- type: Conventions
+  url: conventions/ssen-conventions.yml
+- type: ErrorCatalog
+  url: errors/ssen-problem-types.yml
+- type: RateLimits
+  url: rate-limits/ssen-rate-limits.yml
+- type: Lifecycle
+  url: lifecycle/ssen-lifecycle.yml
+- type: Conformance
+  url: conformance/ssen-conformance.yml
+- type: DataModel
+  url: data-model/ssen-data-model.yml
+- type: WellKnown
+  url: well-known/ssen-well-known.yml
+- type: SecurityTxt
+  url: well-known/ssen-security.txt
+- type: VulnerabilityDisclosure
+  url: security/ssen-vulnerability-disclosure.yml
+- type: Security
+  url: https://ssentransmission.opendatasoft.com/.well-known/security.txt
+- type: MCPServer
+  url: mcp/ssen-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/ssen-llms.txt
+- type: Roadmap
+  url: https://data.ssen.co.uk/@ssen-distribution/ssen-distribution-data-roadmap
+- type: DeveloperPortal
+  url: https://data.ssen.co.uk/
+- type: GettingStarted
+  url: https://raw.githubusercontent.com/datopian/ssen-content/refs/heads/dev/assets/Portal_Guide.pdf
+- type: Support
+  url: https://www.ssen.co.uk/about-ssen/contact-us/
+- type: HelpCenter
+  url: https://data.ssen.co.uk/faq
+- type: Blog
+  url: https://www.ssen.co.uk/news-views/
+- type: SignUp
+  url: https://data.ssen.co.uk/auth/signup
+- type: Login
+  url: https://data.ssen.co.uk/auth/signin
+- type: TermsOfService
+  url: https://data.ssen.co.uk/terms-and-conditions
+- type: PrivacyPolicy
+  url: https://www.ssen.co.uk/privacy-notice/
 - type: Website
   url: https://www.ssen.co.uk/
 - type: Documentation
@@ -153,6 +213,8 @@ common:
   url: https://ssen-innovation.co.uk/
 - type: LinkedIn
   url: https://www.linkedin.com/company/ssen
+- type: YouTube
+  url: https://www.youtube.com/channel/UCUCGdsJ4g3drX9GBvqRH01A
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

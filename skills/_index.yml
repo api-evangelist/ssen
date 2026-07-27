@@ -1,0 +1,27 @@
+generated: '2026-07-27'
+method: generated
+source: >-
+  Packaged Agent Skills generated from the one machine-readable SSEN contract in
+  this repo — openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+  (Opendatasoft Explore API v2.1, 16 operations). Every operationId cited in
+  every skill was verified verbatim against that spec. Cross-cutting rules cite
+  ../conventions/, ../errors/, ../rate-limits/ and ../data-model/.
+note: >-
+  Skills cover the Transmission Explore API only. SSEN's other three public APIs
+  (the CKAN Distribution Action API, the Power Track outage API and the
+  key-gated NeRDA API) publish no OpenAPI, so there are no verified operationIds
+  to ground a skill in. Where those surfaces are genuinely useful they appear as
+  cross-references inside the skills below rather than as fabricated operations.
+skills:
+  - file: ssen-discover-transmission-datasets.md
+    name: Discover SSEN Transmission datasets
+    api: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+    operations: [getDatasets, getDataset, getDatasetsFacets, getRecordsFacets]
+  - file: ssen-export-transmission-records.md
+    name: Pull SSEN Transmission records in bulk
+    api: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+    operations: [getRecords, getRecord, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+  - file: ssen-harvest-catalog-dcat.md
+    name: Harvest the SSEN catalog as DCAT
+    api: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+    operations: [listExportFormats, exportCatalogDCAT, exportCatalogCSV, exportDatasets, getDatasets]

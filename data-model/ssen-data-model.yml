@@ -1,0 +1,190 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+  (components.schemas + path hierarchy), plus the live CKAN 2.10.10 Action API
+  and Power Track outage payloads observed on 2026-07-27.
+description: >-
+  Entity-relationship graph for SSEN's public API surface. The Transmission
+  Explore API has a strict two-level hierarchy — a catalog of datasets, each
+  holding records — which the URI paths mirror exactly. Records are
+  schemaless by design (additionalProperties: any), so the per-dataset field
+  shape is discovered at runtime from dataset.fields rather than declared in
+  the spec. The Distribution CKAN API follows the CKAN package/resource model,
+  and Power Track exposes a single flat fault entity.
+
+entities:
+  - name: catalog
+    api: SSEN Transmission Open Data Explore API
+    path: /catalog
+    description: >-
+      The root of the Transmission portal. Not a returned schema — it is the
+      container the dataset and facet endpoints hang off.
+    identifier: null
+  - name: dataset
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/dataset'
+    identifier: dataset_id
+    alternate_identifier: dataset_uid (readOnly)
+    fields: [_links, dataset_id, dataset_uid, attachments, has_records, data_visible, features, metas, fields]
+    id_form: slug (e.g. etys-circuits) — not numeric
+    description: >-
+      One published transmission dataset. metas carries the descriptive
+      metadata (title, theme, licence, modified) and fields carries the record
+      schema for that dataset. 60 datasets on the SSEN Transmission portal.
+    operations: [getDatasets, getDataset]
+  - name: datasets
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/datasets'
+    kind: collection-envelope
+    fields: [total_count, _links, results]
+    description: Paginated envelope over dataset. The standard collection shape.
+  - name: record
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/record'
+    identifier: _id
+    fields: [_id, _timestamp, _size, _links]
+    open_schema: true
+    description: >-
+      One row inside a dataset. Only the underscore-prefixed system fields are
+      declared; every business field arrives via additionalProperties and is
+      described by the parent dataset's fields array. Any agent consuming
+      records MUST read dataset.fields first.
+    operations: [getRecords, getRecord]
+  - name: records
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/records'
+    kind: collection-envelope
+    fields: [total_count, _links, results]
+  - name: attachment
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/attachment'
+    identifier: metas.id
+    fields: [href, metas.mime-type, metas.title, metas.url, metas.id]
+    description: A file attached to a dataset (PDF, XLSX and similar).
+    operations: [getDatasetAttachments]
+  - name: facet_enumeration
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/facet_enumeration'
+    identifier: name
+    fields: [name, facets]
+    description: A facet dimension and its enumerated values with counts.
+    operations: [getDatasetsFacets, getRecordsFacets]
+  - name: facet_value_enumeration
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/facet_value_enumeration'
+    fields: [name, count, value, state]
+  - name: links
+    api: SSEN Transmission Open Data Explore API
+    schema: '#/components/schemas/links'
+    kind: hypermedia
+    fields: [href, rel]
+    rel_values: [self, first, last, next, dataset, catalog]
+    description: >-
+      HAL-ish navigation. Every collection and resource carries _links, and the
+      rel vocabulary is what makes the catalog->dataset->record hierarchy
+      traversable without hard-coding paths.
+  - name: package
+    api: SSEN Distribution Data Portal API (CKAN)
+    identifier: name (slug) / id (uuid)
+    description: >-
+      A CKAN dataset. 45 packages on the Distribution portal. Carries
+      license_id (CC-BY-4.0 on most), notes, tags, organization and resources.
+    operations: [package_list, package_search, package_show]
+  - name: resource
+    api: SSEN Distribution Data Portal API (CKAN)
+    identifier: id (uuid)
+    description: >-
+      A file or API endpoint belonging to a package (CSV, XLSX, PDF, or a URL
+      to a live API such as the Power Track outage endpoint or the NeRDA guide).
+  - name: organization
+    api: SSEN Distribution Data Portal API (CKAN)
+    identifier: name
+    example: ssen-distribution
+  - name: fault
+    api: SSEN Power Track Real Time Outage API
+    identifier: reference
+    id_form: 'e.g. TS6187'
+    fields: [title, reference, loggedAtUtc, type, location.latitude, location.longitude, estimatedArrivalOnSiteUtc, estimatedRestorationTimeUtc, estimatedFaultUpdateTimeUtc, engineerOnSiteTimeUtc, message, affectedAreas]
+    description: >-
+      One planned or unplanned outage on the SSEN Distribution network. type is
+      the network level (observed HV). affectedAreas is an array of postcodes.
+      The collection response wraps faults in a timestampUtc envelope.
+    verified: live 2026-07-27
+
+relationships:
+  - from: catalog
+    to: dataset
+    type: has_many
+    via: /catalog/datasets
+  - from: datasets
+    to: dataset
+    type: has_many
+    via: results
+  - from: dataset
+    to: record
+    type: has_many
+    via: /catalog/datasets/{dataset_id}/records
+  - from: record
+    to: dataset
+    type: belongs_to
+    via: _links[rel=dataset]
+  - from: records
+    to: record
+    type: has_many
+    via: results
+  - from: dataset
+    to: attachment
+    type: has_many
+    via: attachments / /catalog/datasets/{dataset_id}/attachments
+  - from: dataset
+    to: facet_enumeration
+    type: has_many
+    via: /catalog/datasets/{dataset_id}/facets
+  - from: catalog
+    to: facet_enumeration
+    type: has_many
+    via: /catalog/facets
+  - from: facet_enumeration
+    to: facet_value_enumeration
+    type: has_many
+    via: facets
+  - from: dataset
+    to: links
+    type: has_many
+    via: _links
+  - from: record
+    to: links
+    type: has_many
+    via: _links
+  - from: package
+    to: resource
+    type: has_many
+    via: resources
+  - from: package
+    to: organization
+    type: belongs_to
+    via: organization
+
+cross_api_joins:
+  - description: >-
+      The CKAN Real Time Outage Dataset package on the Distribution portal
+      carries the Power Track API endpoint as one of its resources — the CKAN
+      catalog is the discovery layer for the bespoke outage API.
+    from: package (realtime_outage_dataset)
+    to: fault
+  - description: >-
+      The NeRDA API Guide PDF is published as a CKAN resource, so the key-gated
+      NeRDA API is also discovered through the open catalog.
+    from: package
+    to: SSEN NeRDA API
+
+notes:
+  - >-
+    There is no customer, account, meter or premise entity anywhere in SSEN's
+    public data model. The closest is the Smart Meter LV Feeder Usage dataset,
+    which is aggregated to a minimum of five properties per LV feeder before
+    publication — customer data deliberately turned into grid data.
+  - >-
+    Record schemas are per-dataset and runtime-discovered. Any generated client
+    or agent must call getDataset and read fields[] before it can type a record.

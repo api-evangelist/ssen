@@ -1,0 +1,76 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+provider: Scottish and Southern Electricity Networks
+providerId: ssen
+generated: '2026-07-27'
+method: probed
+created: '2026-07-27'
+modified: '2026-07-27'
+source: >-
+  Live response headers observed on
+  https://ssentransmission.opendatasoft.com/api/explore/v2.1/catalog/datasets on
+  2026-07-27, plus the 429 quota response schema declared in
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json.
+description: >-
+  Only one of SSEN's four public APIs signals rate limits in a machine-readable
+  way: the Transmission Open Data Explore API, which runs on the Opendatasoft
+  platform and returns X-RateLimit-* headers on every response and an RFC-style
+  quota body on 429. The observed anonymous allowance was 100 calls with a daily
+  reset window. The CKAN Distribution Action API, the Power Track outage API and
+  NeRDA publish no rate-limit headers and no documented quota.
+tags:
+  - Rate Limiting
+  - Open Data
+  - Electricity
+sources:
+  - https://ssentransmission.opendatasoft.com/api/explore/v2.1/catalog/datasets
+  - openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: X-RateLimit-Reset
+  datasetLimit: X-RateLimit-dataset-Limit
+  datasetRemaining: X-RateLimit-dataset-Remaining
+  datasetReset: X-RateLimit-dataset-Reset
+  deprecation: ODS-Explore-API-Deprecation
+responseCodes:
+  throttled: 429
+throttleResponse:
+  contentType: application/json; charset=utf-8
+  fields: [errorcode, error, call_limit, limit_time_unit, reset_time]
+  example:
+    errorcode: 10002
+    limit_time_unit: day
+    call_limit: 10000
+    reset_time: '2021-01-26T00:00:00Z'
+  note: >-
+    Example values above are the ones published verbatim in the OpenAPI 429
+    response example; the live allowance observed on the SSEN portal differs
+    (see limits[]).
+limits:
+  - name: Anonymous Explore API calls (SSEN Transmission portal)
+    api: SSEN Transmission Open Data Explore API
+    scope: client
+    metric: requests_per_day
+    limit: 100
+    timeFrame: day
+    observed: '2026-07-27'
+    evidence: 'X-RateLimit-Limit: 100, X-RateLimit-Remaining: 94, X-RateLimit-Reset: 2026-07-28 00:00:00+00:00'
+    note: >-
+      Reset is an absolute UTC midnight timestamp, so the window is a calendar
+      day. A per-dataset counter is exposed separately via the
+      X-RateLimit-dataset-* headers.
+payload_limits:
+  - endpoint: /catalog/datasets/{dataset_id}/records
+    constraint: returns a limited number of records per call (paginate with limit/offset)
+    workaround: use the /exports endpoints, which the spec states have no such limitation
+unmetered_or_undocumented:
+  - api: SSEN Distribution Data Portal API (CKAN)
+    rate_limit_headers: none observed
+    documented_quota: none published
+  - api: SSEN Power Track Real Time Outage API
+    rate_limit_headers: none observed
+    documented_quota: none published
+  - api: SSEN NeRDA API
+    rate_limit_headers: not testable anonymously (API key required)
+    documented_quota: none published in the NeRDA API Guide

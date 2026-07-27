@@ -1,0 +1,144 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Derived from the 4xx/5xx responses declared in
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json, then
+  upgraded with live error responses provoked against every anonymously
+  reachable SSEN API on 2026-07-27. Every code and message below was returned by
+  the live API or published verbatim in the spec.
+format: vendor-json
+rfc9457: false
+description: >-
+  SSEN's public APIs do not use RFC 9457 problem+json. Each surface returns its
+  platform's own error envelope. The Transmission Explore API returns a
+  {error_code, message} object with stable string codes; the Distribution CKAN
+  Action API returns the CKAN {help, success:false, error:{__type, message}}
+  envelope with HTTP 200-or-status semantics; the Power Track outage API returns
+  {statusCode, message}.
+
+envelopes:
+  - api: SSEN Transmission Open Data Explore API
+    content_type: application/json; charset=utf-8
+    fields: [error_code, message]
+    quota_fields: [errorcode, error, call_limit, limit_time_unit, reset_time]
+    note: >-
+      Note the inconsistency in the platform itself — 4xx bodies use error_code
+      (snake, string) while the 429 quota body uses errorcode (no underscore,
+      numeric).
+  - api: SSEN Distribution Data Portal API (CKAN 2.10.10)
+    content_type: application/json
+    fields: [help, success, error.__type, error.message]
+  - api: SSEN Power Track Real Time Outage API
+    content_type: application/json
+    fields: [statusCode, message]
+
+problems:
+  - status: 400
+    api: SSEN Transmission Open Data Explore API
+    code: ODSQLSyntaxError
+    title: ODSQL syntax exception
+    detail_example: >-
+      ODSQL syntax exception: unexpected ( at position 16 in invalid_function().
+      Clause(s) containing the error(s): select.
+    remediation: >-
+      Fix the ODSQL clause named in the message (select, where, group_by,
+      order_by, refine or exclude). The message names the offending clause and
+      character position.
+    verified: live 2026-07-27
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getDatasets
+  - status: 400
+    api: SSEN Transmission Open Data Explore API
+    code: ODSQLError
+    title: ODSQL query is malformed
+    detail_example: >-
+      ODSQL query is malformed: invalid_function() Clause(s) containing the
+      error(s): select.
+    remediation: Use a documented ODSQL function; see the ODSQL reference.
+    source: spec example components.responses.bad_request.examples.invalid_odsql
+  - status: 401
+    api: SSEN Transmission Open Data Explore API
+    code: null
+    title: Unauthorized
+    remediation: >-
+      Supply the apikey query parameter. Only required for private datasets;
+      SSEN's 60 transmission datasets are public and read anonymously.
+    source: spec (declared on all 16 operations, description only, no schema)
+  - status: 404
+    api: SSEN Transmission Open Data Explore API
+    code: NotFoundResource
+    title: The requested dataset does not exist
+    detail_example: The requested dataset zzz-nope does not exist.
+    remediation: >-
+      Resolve the dataset_id from /catalog/datasets first — dataset ids are
+      slugs, not numeric.
+    verified: live 2026-07-27
+    spec_gap: >-
+      404 is NOT declared on any operation in the harvested OpenAPI, yet it is
+      the response the live API returns for an unknown dataset_id. Undocumented
+      status.
+  - status: 429
+    api: SSEN Transmission Open Data Explore API
+    code: '10002'
+    title: Too many requests
+    fields: [errorcode, error, call_limit, limit_time_unit, reset_time]
+    remediation: >-
+      Read X-RateLimit-Reset (absolute UTC timestamp) and retry after it. The
+      anonymous allowance observed on the SSEN portal was 100 calls per calendar
+      day.
+    detail: rate-limits/ssen-rate-limits.yml
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getRecords
+  - status: 500
+    api: SSEN Transmission Open Data Explore API
+    code: null
+    title: Internal Server Error
+    remediation: Retry with backoff; contact the portal if persistent.
+    source: spec (declared on all 16 operations, description only, no schema)
+  - status: 404
+    api: SSEN Distribution Data Portal API (CKAN)
+    code: Not Found Error
+    title: Not found
+    envelope_example:
+      help: https://data-api.ssen.co.uk/api/3/action/help_show?name=package_show
+      success: false
+      error: {__type: Not Found Error, message: Not found}
+    remediation: >-
+      List valid dataset names with /api/3/action/package_list (45 packages) and
+      retry package_show with an exact name.
+    verified: live 2026-07-27
+  - status: 403
+    api: SSEN Distribution Data Portal API (CKAN)
+    code: null
+    title: Forbidden (WAF / noanonaccess)
+    remediation: >-
+      NOT an authentication error. data-api.ssen.co.uk returns 403 to requests
+      with a default curl User-Agent and to every non-/api/3 path. Send a normal
+      browser User-Agent and call only /api/3/action/* — the Action API answers
+      anonymously with HTTP 200.
+    verified: live 2026-07-27
+  - status: 404
+    api: SSEN Power Track Real Time Outage API
+    code: '404'
+    title: Resource not found
+    envelope_example: {statusCode: 404, message: Resource not found}
+    remediation: >-
+      The only valid paths are /getallfaults and /getbyid/{reference}. Fault
+      references look like TS6187 and are returned by /getallfaults.
+    verified: live 2026-07-27
+  - status: 404
+    api: SSEN NeRDA API
+    code: null
+    title: Not found (anonymous)
+    remediation: >-
+      NeRDA returns 404 rather than 401/403 to unauthenticated callers on the
+      documented endpoints. Register a free SSEN account, accept the NeRDA
+      portal terms, and mint an API key in the portal API console.
+    verified: live 2026-07-27
+    note: >-
+      Returning 404 instead of 401 for missing credentials is a real usability
+      defect — it is indistinguishable from a wrong path.
+
+coverage:
+  operations_in_spec: 16
+  statuses_declared_per_operation: [200, 400, 401, 429, 500]
+  undeclared_statuses_observed: [404]
+  apis_without_a_spec: 3

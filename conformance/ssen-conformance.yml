@@ -1,0 +1,133 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json, live probes
+  of all four SSEN API surfaces, and review.yml's standards findings — all
+  2026-07-27.
+description: >-
+  Which cross-cutting and sector standards SSEN's public APIs actually conform
+  to. The honest headline is that SSEN's API surface is platform-conventional
+  rather than standards-conformant: DCAT is genuinely implemented on both
+  portals, CC BY 4.0 licensing is genuinely applied, and after that the
+  energy-sector API standards (Green Button/ESPI, IEEE 2030.5, OpenADR, OCPP/
+  OCPI, IEC CIM) are simply absent. The GB standards that do bind SSEN — Ofgem
+  Data Best Practice, the ENA Open Networks Embedded Capacity Register format,
+  LTDS and DFES — are data-publication formats, not API specifications.
+
+standards:
+  - id: openapi-3
+    conforms: true
+    evidence: >-
+      openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json is
+      OpenAPI 3.0.3 with 16 operations, all with operationIds, summaries,
+      descriptions, tags and in-spec response examples. It is the Opendatasoft
+      platform's spec, served from SSEN's portal host, not SSEN-authored.
+    scope: SSEN Transmission Open Data Explore API
+  - id: dcat
+    conforms: true
+    evidence: >-
+      /catalog/exports/dcat and /catalog/exports/dcat{dcat_ap_format} are
+      declared operations and return 200 on the Transmission portal; the
+      Distribution CKAN instance loads the dcat and dcat_json_interface
+      extensions and serves catalog.jsonld / catalog.rdf / catalog.ttl.
+    scope: both open data portals
+  - id: ckan-action-api-3
+    conforms: true
+    evidence: >-
+      status_show returns ckan_version 2.10.10; package_list, package_show and
+      help_show all answer anonymously with the standard CKAN envelope.
+    scope: SSEN Distribution Data Portal API
+  - id: cc-by-4.0
+    conforms: true
+    evidence: >-
+      license_id CC-BY-4.0 returned by CKAN package_show; the Transmission
+      portal's 60 datasets are CC BY 4.0; terms restated at
+      https://data.ssen.co.uk/terms-and-conditions
+    scope: data licensing on both portals
+  - id: rfc9116-security-txt
+    conforms: partial
+    evidence: >-
+      A valid RFC 9116 security.txt is served at
+      https://ssentransmission.opendatasoft.com/.well-known/security.txt, but it
+      is the Opendatasoft platform's file. No SSEN-authored security.txt exists
+      on any SSEN-controlled host.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      No application/problem+json anywhere. Three different vendor error
+      envelopes across four APIs — see errors/ssen-problem-types.yml.
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      No oauth2 securityScheme in the spec; no
+      /.well-known/oauth-authorization-server on any host.
+  - id: oidc
+    conforms: false
+    evidence: >-
+      https://www.ssen.co.uk/.well-known/openid-configuration returned 404;
+      no OIDC discovery document is served anywhere on the estate.
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation header observed. A platform-specific
+      ODS-Explore-API-Deprecation header is exposed via CORS instead.
+  - id: rate-limit-headers
+    conforms: partial
+    evidence: >-
+      X-RateLimit-Limit / -Remaining / -Reset returned on the Transmission
+      Explore API (de-facto convention, not RFC 9239 draft RateLimit fields).
+      The other three APIs emit no rate-limit signal.
+  - id: cors
+    conforms: true
+    evidence: >-
+      Access-Control-Allow-Headers / -Expose-Headers / -Max-Age observed on live
+      Transmission Explore API responses.
+  - id: json-api
+    conforms: false
+  - id: odata
+    conforms: false
+  - id: scim
+    conforms: false
+  - id: fhir
+    conforms: false
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      No event, streaming or webhook surface exists on any SSEN API. Outage data
+      is poll-only via Power Track /getallfaults.
+
+sector_standards:
+  - id: green-button-espi
+    conforms: false
+    evidence: No reference found on any SSEN property. Not mandated in Great Britain.
+  - id: cdr-consumer-data-standards
+    conforms: false
+    evidence: Australian regime; not applicable to a GB DNO.
+  - id: ieee-2030.5
+    conforms: false
+  - id: openadr
+    conforms: false
+  - id: ocpp-ocpi
+    conforms: false
+  - id: iec-cim-61968-61970
+    conforms: false
+    evidence: No explicit CIM conformance claim found.
+  - id: ena-open-networks-ecr-v4.0
+    conforms: true
+    evidence: >-
+      The Embedded Capacity Register is published in the format agreed through
+      the Energy Networks Association Open Networks project (register v4.0), as
+      XLSX/CSV resources on the CKAN portal. A data format, not an API spec.
+  - id: ofgem-data-best-practice
+    conforms: true
+    evidence: >-
+      Licence condition under RIIO-ED2. Implemented visibly — Presumed Open
+      publication, and published SSEN Data Triage record PDFs attached as
+      resources to datasets (e.g. external-data-triage-ecr-artefact.pdf on the
+      Embedded Capacity Register).
+    note: >-
+      This is a regulatory open-data obligation, not a certification. SSEN
+      publishes no SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP attestation, so
+      no Compliance pointer is asserted.
+
+certifications_published: []

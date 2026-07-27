@@ -1,0 +1,99 @@
+generated: '2026-07-27'
+method: searched
+source: live probes of every SSEN API host and web property on 2026-07-27
+description: >-
+  Result of probing the RFC 8615 /.well-known/ discovery surface across all four
+  SSEN API hosts plus the corporate and portal web properties. Only one document
+  was served: an RFC 9116 security.txt on the SSEN Transmission Open Data Portal
+  host, and that file is the Opendatasoft PLATFORM security contact rather than
+  an SSEN-authored one — recorded as found, attributed honestly. No OpenID
+  Connect discovery, no OAuth authorization-server metadata, no api-catalog and
+  no ai-plugin manifest is published anywhere on the SSEN estate.
+note: >-
+  data-api.ssen.co.uk answers /api/3/action/* anonymously but returns HTTP 403
+  for every non-API path, including /.well-known/*. That 403 is the CKAN
+  "noanonaccess" extension plus WAF bot filtering, not an authentication
+  requirement — recorded as the literal status observed.
+hosts:
+  - host: https://ssentransmission.opendatasoft.com
+    api: SSEN Transmission Open Data Explore API
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: ssen-security.txt
+        standard: RFC 9116
+        authored_by: Opendatasoft (platform vendor)
+        contact: mailto:security@opendatasoft.com
+        expires: '2050-01-01T11:00:00.000Z'
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /robots.txt
+        status: 200
+  - host: https://data-api.ssen.co.uk
+    api: SSEN Distribution Data Portal API (CKAN 2.10.10)
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+      - path: /.well-known/api-catalog
+        status: 403
+      - path: /.well-known/ai-plugin.json
+        status: 403
+  - host: https://external.distribution.prd.ssen.co.uk
+    api: SSEN Power Track Real Time Outage API
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+  - host: https://nerda.opengrid.com
+    api: SSEN NeRDA API
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+  - host: https://www.ssen.co.uk
+    api: null
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+  - host: https://data.ssen.co.uk
+    api: null
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+  - host: https://www.ssen-transmission.co.uk
+    api: null
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+summary:
+  probed_hosts: 7
+  documents_found: 1
+  security_txt: true
+  openid_configuration: false
+  oauth_authorization_server: false
+  api_catalog: false
+  ai_plugin: false

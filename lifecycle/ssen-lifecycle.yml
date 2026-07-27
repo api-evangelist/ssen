@@ -1,0 +1,96 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Live probes of every SSEN API host and web property on 2026-07-27, plus
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json.
+description: >-
+  SSEN publishes no API versioning policy, no deprecation policy, no SLA and no
+  status page. Version identity is carried in the URI path on all four surfaces
+  and is inherited from the underlying platform (Opendatasoft Explore v2.1, CKAN
+  API 3, Power Track v4). The one lifecycle signal that exists is a platform
+  header — the Transmission Explore API whitelists an ODS-Explore-API-Deprecation
+  response header in its CORS expose-headers list, so the platform can announce a
+  deprecation in-band. SSEN does publish a data roadmap, as a dataset on its own
+  Distribution portal.
+
+versioning:
+  scheme: uri-path
+  policy_url: null
+  apis:
+    - api: SSEN Transmission Open Data Explore API
+      current: v2.1
+      path: /api/explore/v2.1
+      prior_versions_still_answering: [v2.0]
+      evidence: >-
+        https://ssentransmission.opendatasoft.com/api/explore/v2.0/swagger.json
+        returned HTTP 200 on 2026-07-27 alongside v2.1.
+    - api: SSEN Distribution Data Portal API
+      current: '3'
+      path: /api/3/action
+      platform_version: CKAN 2.10.10
+      evidence: /api/3/action/status_show returns ckan_version 2.10.10
+    - api: SSEN Power Track Real Time Outage API
+      current: v4
+      path: /opendataportal-prd/v4/api
+    - api: SSEN NeRDA API
+      current: null
+      path: /api
+      note: >-
+        No version segment. A 2023 SSEN update referred to moving NeRDA API
+        authentication to a bearer token while the published API Guide still
+        describes an API key — an unversioned, undocumented change of contract.
+
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: ODS-Explore-API-Deprecation
+  deprecation_header_scope: SSEN Transmission Open Data Explore API (Opendatasoft platform)
+  evidence: >-
+    Access-Control-Expose-Headers on live v2.1 responses includes
+    ODS-Explore-API-Deprecation, so a deprecation notice can be surfaced to
+    browser clients. No RFC 8594 Sunset or Deprecation header was observed and
+    no deprecation policy page exists on any SSEN property.
+  deprecated_operations: []
+
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No API SLA published. SSEN's regulated obligations under RIIO-ED2/RIIO-T3
+    concern network performance, not API availability.
+
+status_page:
+  url: null
+  probed:
+    - {url: 'https://status.opendatasoft.com/', status: 404}
+    - {url: 'https://www.ssen.co.uk/', note: 'power-cut map, not an API status page'}
+  note: >-
+    Neither SSEN nor the Opendatasoft portal exposes an API status page.
+    powertrack.ssen.co.uk is a network outage map for electricity supply — it
+    reports the state of the grid, not the state of the API.
+
+roadmap:
+  url: https://data.ssen.co.uk/@ssen-distribution/ssen-distribution-data-roadmap
+  status: 200
+  form: >-
+    Published as a dataset on the SSEN Distribution Data Portal rather than as a
+    developer roadmap page — it is a data-publication roadmap (what data lands
+    next), not an API roadmap.
+  related:
+    - https://www.ssen.co.uk/about-ssen/digital-strategy/
+    - https://www.ssen-transmission.co.uk/about-us/digital-strategy-and-action-plan/
+
+changelog:
+  url: null
+  note: >-
+    No dated changelog for any of the four APIs. Dataset-level currency is
+    carried in CKAN metadata_modified and in the Opendatasoft dataset
+    modification timestamps, not in an API changelog.
+
+regulatory_context:
+  driver: Ofgem Data Best Practice licence condition (RIIO-ED2)
+  effect: >-
+    Publication cadence and dataset scope are driven by the Presumed Open /
+    Open Data Triage obligation rather than by an API product lifecycle. Open
+    Data Triage records are attached to datasets as PDF resources.

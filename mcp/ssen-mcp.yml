@@ -1,0 +1,88 @@
+generated: '2026-07-27'
+method: derived
+status: candidate
+source: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+description: >-
+  SSEN publishes no MCP server. No hosted or remote MCP endpoint was found on
+  any SSEN host, no @modelcontextprotocol package references SSEN, and neither
+  the Opendatasoft nor the CKAN portal advertises one. This is a CANDIDATE
+  manifest derived one-to-one from the 16 real operations in the harvested
+  Opendatasoft Explore v2.1 OpenAPI — every tool below inherits its input
+  contract from the named operationId in that spec. Nothing here is published by
+  SSEN; it is what an MCP server over the SSEN Transmission open data surface
+  would expose.
+search:
+  hosted_server_found: false
+  probed:
+    - {url: 'https://ssentransmission.opendatasoft.com/mcp', note: not published}
+    - {url: 'https://data.ssen.co.uk/mcp', note: not published}
+    - {url: 'https://www.ssen.co.uk/.well-known/ai-plugin.json', status: 404}
+    - {url: 'https://ssentransmission.opendatasoft.com/.well-known/ai-plugin.json', status: 404}
+server:
+  name: ssen-transmission-open-data
+  transport: null
+  url: null
+  auth: >-
+    None for public datasets. The backing API accepts an optional apikey query
+    parameter for private datasets.
+  base_url: https://ssentransmission.opendatasoft.com/api/explore/v2.1
+tools:
+  - name: list_datasets
+    description: Query the catalog of SSEN Transmission open datasets using ODSQL.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getDatasets
+  - name: get_dataset
+    description: Retrieve one transmission dataset's metadata, features and field schema.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getDataset
+  - name: list_catalog_export_formats
+    description: List the export formats available for the whole catalog.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#listExportFormats
+  - name: export_catalog
+    description: Export the dataset catalog in a chosen format.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportDatasets
+  - name: export_catalog_csv
+    description: Export the dataset catalog as CSV.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportCatalogCSV
+  - name: export_catalog_dcat
+    description: Export the dataset catalog as DCAT (including DCAT-AP profiles).
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportCatalogDCAT
+  - name: get_catalog_facets
+    description: Enumerate catalog-level facets and their value counts.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getDatasetsFacets
+  - name: query_records
+    description: Query the records of one transmission dataset using ODSQL.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getRecords
+  - name: get_record
+    description: Retrieve a single record from a dataset by record id.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getRecord
+  - name: get_record_facets
+    description: Enumerate facets and value counts across a dataset's records.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getRecordsFacets
+  - name: list_dataset_export_formats
+    description: List the export formats available for one dataset.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#listDatasetExportFormats
+  - name: export_records
+    description: Export a dataset's records in a chosen format (no record-count limit).
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportRecords
+  - name: export_records_csv
+    description: Export a dataset's records as CSV.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportRecordsCSV
+  - name: export_records_parquet
+    description: Export a dataset's records as Parquet.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportRecordsParquet
+  - name: export_records_gpx
+    description: Export a dataset's geo records as GPX.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#exportRecordsGPX
+  - name: get_dataset_attachments
+    description: List files attached to a dataset.
+    source_operation: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json#getDatasetAttachments
+coverage:
+  rest_operations: 16
+  tools_derived: 16
+  all_read_only: true
+not_covered:
+  - api: SSEN Distribution Data Portal API (CKAN)
+    reason: No OpenAPI published; tools would have to be hand-written against CKAN action names.
+  - api: SSEN Power Track Real Time Outage API
+    reason: No OpenAPI published (two endpoints — getallfaults, getbyid/{reference}).
+  - api: SSEN NeRDA API
+    reason: No OpenAPI published and the surface is API-key gated.

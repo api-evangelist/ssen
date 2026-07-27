@@ -1,0 +1,169 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json (Opendatasoft
+  Explore API v2.1), the CKAN 2.10.10 Action API responses observed live on
+  https://data-api.ssen.co.uk/api/3/action/*, the Power Track outage endpoints,
+  and the NeRDA API Guide PDF — all probed 2026-07-27.
+description: >-
+  Cross-cutting request/response semantics across SSEN's four public APIs. There
+  is no single SSEN API style: each surface inherits the conventions of the
+  platform it runs on. The Transmission portal is Opendatasoft Explore v2.1
+  (REST + ODSQL, offset pagination, X-RateLimit headers). The Distribution
+  portal is the CKAN 2.10.10 Action API (RPC-over-HTTP with a uniform
+  success/result/error envelope). Power Track is a bespoke read-only JSON
+  endpoint pair. NeRDA is a bespoke key-gated time-series API. All four are
+  READ-ONLY — there is no write surface anywhere, which is why there is no
+  idempotency contract to record.
+
+api_style: >-
+  Mixed. REST-over-HTTPS with JSON responses on three surfaces; CKAN's
+  action-style RPC (GET/POST to /api/3/action/<action>) on the fourth. No
+  GraphQL, no gRPC, no streaming, no webhooks.
+
+surfaces:
+  - api: SSEN Transmission Open Data Explore API
+    base_url: https://ssentransmission.opendatasoft.com/api/explore/v2.1
+    platform: Opendatasoft Explore API v2.1
+    spec: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+    methods: [GET]
+  - api: SSEN Distribution Data Portal API
+    base_url: https://data-api.ssen.co.uk/api/3/action
+    platform: CKAN 2.10.10 (Datopian-hosted)
+    spec: null
+    methods: [GET, POST]
+  - api: SSEN Power Track Real Time Outage API
+    base_url: https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api
+    platform: bespoke SSEN
+    spec: null
+    methods: [GET]
+  - api: SSEN NeRDA API
+    base_url: https://nerda.opengrid.com/api
+    platform: bespoke SSEN / OpenGrid
+    spec: null
+    methods: [GET]
+
+authentication:
+  scheme: >-
+    None for three of four APIs. Optional apiKey query parameter on the
+    Transmission Explore API (private datasets only). API key required for
+    NeRDA, minted in the portal API console after free registration and T&C
+    acceptance.
+  detail: authentication/ssen-authentication.yml
+  note: >-
+    data-api.ssen.co.uk applies WAF bot filtering — a default curl User-Agent
+    receives HTTP 403 while a browser User-Agent receives 200. This is not
+    authentication; set a real User-Agent.
+
+idempotency:
+  supported: false
+  reason: >-
+    Every published SSEN API operation is a read. There are no POST/PUT/PATCH/DELETE
+    operations on any public surface, so no idempotency-key contract exists or is
+    needed. HTTP GET semantics carry the idempotency guarantee.
+  header: null
+
+pagination:
+  transmission_explore:
+    style: offset
+    request_params:
+      limit: maximum records to return per page (records endpoint is capped; exports are not)
+      offset: index of the first record to return
+    response_fields:
+      total_count: total number of matching items
+      results: array of results
+      links: HAL-style navigation links (self, first, next, last) on every response
+    note: >-
+      For bulk retrieval the spec directs callers to the /exports endpoints,
+      which are explicitly stated to have no record-count limitation.
+  ckan_action_api:
+    style: offset
+    request_params:
+      rows: page size on package_search
+      start: offset on package_search
+      limit: page size on package_list / datastore_search
+      offset: offset on datastore_search
+    response_fields:
+      count: total matching packages on package_search
+      results: array of packages
+
+query_language:
+  name: Opendatasoft Query Language (ODSQL)
+  applies_to: SSEN Transmission Open Data Explore API
+  params: [select, where, group_by, order_by, refine, exclude, limit, offset, lang, timezone]
+  note: >-
+    ODSQL parameters behave uniformly across the catalog, dataset, records and
+    facets endpoints — one query grammar for the whole API.
+  docs: https://help.opendatasoft.com/apis/ods-explore-v2/
+
+field_selection:
+  supported: true
+  mechanism: ODSQL select= clause on the Transmission Explore API (sparse fieldsets and computed fields)
+  ckan: package_search fl= field list
+
+response_envelope:
+  transmission_explore: >-
+    Bare JSON object per resource; collections return {total_count, results[],
+    links[]}. Content-Type is "application/json; charset=utf-8".
+  ckan_action_api: >-
+    Uniform CKAN envelope on every action: {"help": <help_show URL>, "success":
+    <bool>, "result": <payload>} on success and {"help", "success": false,
+    "error": {"__type", "message"}} on failure. The help field is a
+    self-describing link to that action's generated documentation.
+  power_track: >-
+    JSON object with a timestampUtc and a fault array; per-fault lookup returns
+    a single fault object. Errors return {"statusCode": <int>, "message": <str>}.
+
+error_envelope:
+  format: vendor JSON (not RFC 9457 problem+json)
+  transmission_explore:
+    fields_4xx: [message, error_code]
+    fields_429: [errorcode, error, call_limit, limit_time_unit, reset_time]
+    example_error_code: ODSQLError
+  ckan_action_api:
+    fields: [help, success, error.__type, error.message]
+  power_track:
+    fields: [statusCode, message]
+  detail: errors/ssen-problem-types.yml
+
+rate_limit_signaling:
+  supported: true
+  scope: SSEN Transmission Open Data Explore API only
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Reset]
+  throttled_status: 429
+  detail: rate-limits/ssen-rate-limits.yml
+
+request_tracing:
+  supported: false
+  note: >-
+    No request-id / correlation-id header is returned by any SSEN API surface.
+
+versioning:
+  style: uri-path
+  transmission_explore: /api/explore/v2.1 (v2.0 also live and answering)
+  ckan_action_api: /api/3/action (CKAN API version 3)
+  power_track: /opendataportal-prd/v4/api
+  deprecation_signal: >-
+    The Transmission Explore API exposes an ODS-Explore-API-Deprecation response
+    header via Access-Control-Expose-Headers. No RFC 8594 Sunset or Deprecation
+    header was observed, and SSEN publishes no deprecation policy.
+  detail: lifecycle/ssen-lifecycle.yml
+
+content_negotiation:
+  formats: [json, csv, parquet, gpx, geojson, shp, dcat, rdf, ttl, jsonld]
+  note: >-
+    The Transmission Explore API exposes format-specific export endpoints
+    (/exports/{format}) rather than Accept-header negotiation. The Distribution
+    CKAN portal exposes DCAT catalog serialisations at
+    https://ckan-prod.sse.datopian.com/catalog.jsonld | .rdf | .ttl.
+
+cors:
+  supported: true
+  scope: SSEN Transmission Open Data Explore API
+  evidence: >-
+    Access-Control-Allow-Headers and Access-Control-Expose-Headers observed on
+    live responses; Access-Control-Max-Age 1000.
+
+licensing:
+  data_licence: CC BY 4.0 on most datasets on both portals
+  terms: https://data.ssen.co.uk/terms-and-conditions

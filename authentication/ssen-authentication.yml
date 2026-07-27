@@ -1,0 +1,16 @@
+generated: '2026-07-27'
+method: derived
+source: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - query
+schemes:
+- name: apikey
+  type: apiKey
+  in: query
+  parameter: apikey
+  description: API key to make authenticated requests.
+  sources:
+  - openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json

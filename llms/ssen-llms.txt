@@ -1,0 +1,115 @@
+# Scottish and Southern Electricity Networks (SSEN)
+
+> SSEN is the SSE plc electricity networks business in Great Britain — the poles-and-wires
+> layer, not an energy retailer. SSEN Distribution is the licensed Distribution Network
+> Operator for two GB licence areas (SHEPD in the north of Scotland, SEPD in central
+> southern England) serving over 3.9 million homes and businesses; SSEN Transmission owns
+> and operates the high-voltage transmission system for the north of Scotland. SSEN
+> publishes four public APIs across two open data portals and two bespoke services. Grid
+> and market data are genuinely open; there is no consumer data API, because Great Britain
+> mandates smart-meter infrastructure and open-data disclosure rather than a consumer data
+> right.
+
+Generated 2026-07-27 by API Evangelist. No /llms.txt is published on any SSEN host
+(probed: www.ssen.co.uk, data.ssen.co.uk, data-api.ssen.co.uk,
+ssentransmission.opendatasoft.com, external.distribution.prd.ssen.co.uk,
+nerda.opengrid.com, www.ssen-transmission.co.uk — all 404 or 403). This file is generated
+from the API Evangelist catalog entry and the artifacts in this repository.
+
+## What an agent needs to know first
+
+- Four APIs, one OpenAPI. Only the SSEN Transmission Explore API has a machine-readable
+  contract, and it is the Opendatasoft platform's spec, not SSEN-authored.
+- Everything is read-only. There are no POST/PUT/PATCH/DELETE operations on any public
+  SSEN surface, so there is no idempotency contract and no write risk.
+- Three of four APIs need no credential. Only NeRDA is gated, by a free self-serve API key.
+- `data-api.ssen.co.uk` returns HTTP 403 to a default curl User-Agent. Send a normal
+  browser User-Agent. That is WAF bot filtering, not authentication.
+- The Transmission Explore API allows roughly 100 anonymous calls per calendar day. Use
+  the export endpoints instead of paging.
+- No consumer, account, meter or premise entity exists anywhere in the public data model.
+
+## APIs
+
+- [SSEN Distribution Data Portal API](https://data.ssen.co.uk/): CKAN 2.10.10 Action API,
+  45 open datasets, anonymous. Base URL `https://data-api.ssen.co.uk/api/3/action`.
+  Substations, LV feeder smart meter half-hourly usage, Embedded Capacity Register,
+  flexibility market registers, DFES, licence area boundaries, Long Term Development
+  Statements. Mostly CC BY 4.0.
+- [SSEN Power Track Real Time Outage API](https://data.ssen.co.uk/@ssen-distribution/realtime_outage_dataset):
+  anonymous JSON, planned and unplanned outages with fault reference, type, lat/long,
+  estimated restoration time and affected postcodes. Base URL
+  `https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api`
+  (`/getallfaults`, `/getbyid/{reference}`). CC BY 4.0.
+- [SSEN NeRDA API](https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/):
+  near real-time power flow from EHV, HV and LV networks. Base URL
+  `https://nerda.opengrid.com/api`. Requires a free SSEN account, acceptance of the
+  portal terms, and an API key minted in the portal API console. Anonymous calls to the
+  documented endpoints return 404.
+- [SSEN Transmission Open Data Explore API](https://ssentransmission.opendatasoft.com/):
+  Opendatasoft Explore API v2.1 over 60 CC BY 4.0 transmission datasets — ETYS circuits
+  and fault levels, ground investigation points and related network records — via 16
+  read-only GET operations for catalog search, dataset records, facets and exports
+  (CSV, Parquet, GPX, DCAT). Base URL
+  `https://ssentransmission.opendatasoft.com/api/explore/v2.1`.
+
+## Specs
+
+- [OpenAPI 3.0.3 — Explore API v2.1](openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json):
+  16 operations, all GET, all with operationIds, summaries, tags and in-spec examples.
+  Harvested verbatim from
+  `https://ssentransmission.opendatasoft.com/api/explore/v2.1/swagger.json`.
+- [API Evangelist overlay](overlays/ssen-transmission-opendatasoft-explore-v2.1-overlay.yaml):
+  provenance, the undeclared 404 response, the live rate-limit facts and the still-live
+  v2.0 server — recorded without mutating the vendor spec.
+
+## Artifacts in this repository
+
+- [Authentication profile](authentication/ssen-authentication.yml)
+- [API conventions](conventions/ssen-conventions.yml) — pagination, ODSQL, envelopes, versioning, CORS
+- [Error catalog](errors/ssen-problem-types.yml) — real error codes from all four surfaces
+- [Rate limits](rate-limits/ssen-rate-limits.yml) — observed X-RateLimit-* values
+- [Lifecycle](lifecycle/ssen-lifecycle.yml) — versioning, deprecation signal, roadmap, no status page
+- [Data model](data-model/ssen-data-model.yml) — catalog → dataset → record, plus CKAN and fault entities
+- [Conformance](conformance/ssen-conformance.yml) — DCAT yes; Green Button / IEEE 2030.5 / OCPP no
+- [Well-known index](well-known/ssen-well-known.yml) and [security.txt](well-known/ssen-security.txt)
+- [Vulnerability disclosure](security/ssen-vulnerability-disclosure.yml)
+- [Domain security](security/ssen-domain-security.yml) — TLS, HSTS, SPF, DMARC, CAA, DNSSEC
+- [Agentic access](agentic-access/ssen-agentic-access.yml)
+- [MCP candidate manifest](mcp/ssen-mcp.yml) — derived, not published by SSEN
+- [Agent skills](skills/_index.yml)
+
+## Docs
+
+- [SSEN Distribution Data Portal](https://data.ssen.co.uk/)
+- [Data Portal FAQ](https://data.ssen.co.uk/faq)
+- [Data Portal Guide (PDF)](https://raw.githubusercontent.com/datopian/ssen-content/refs/heads/dev/assets/Portal_Guide.pdf)
+- [Terms and conditions](https://data.ssen.co.uk/terms-and-conditions)
+- [SSEN Distribution data roadmap](https://data.ssen.co.uk/@ssen-distribution/ssen-distribution-data-roadmap)
+- [Transmission API console](https://ssentransmission.opendatasoft.com/api/explore/v2.1/console)
+- [Transmission portal FAQs](https://ssentransmission.opendatasoft.com/pages/faqs/)
+- [NeRDA API Guide (PDF)](https://data-api.ssen.co.uk/dataset/195500da-46ae-4698-939c-f7f4293f7b43/resource/c90db7e1-c666-4092-998c-b71d782b16db/download/nerda-api-guide.pdf)
+- [SSEN digital strategy](https://www.ssen.co.uk/about-ssen/digital-strategy/)
+- [SSEN Transmission digital strategy and action plan](https://www.ssen-transmission.co.uk/about-us/digital-strategy-and-action-plan/)
+
+## Regulatory context
+
+- Ofgem **Data Best Practice** is a licence condition under RIIO-ED2: network licensees
+  must treat data as **Presumed Open**, subject to **Open Data Triage**. SSEN attaches
+  published Data Triage record PDFs to its datasets.
+- GB smart meter traffic runs through the licensed **Smart DCC** monopoly under the Smart
+  Energy Code. SSEN takes smart meter data through that route via its smart meter adapter.
+- SSEN was the first GB DNO to publish full smart meter half-hourly consumption data,
+  aggregated to no fewer than five properties per LV feeder.
+- There is **no** GB equivalent of the Australian Consumer Data Right or Ontario's Green
+  Button regulation for energy. No SSEN API exposes an individual customer's usage or
+  billing data, and none is required to.
+
+## Contact
+
+- Data portal enquiries: data@ssen.co.uk
+- NeRDA API access enquiries: SSENSmart@sse.com
+- [Contact SSEN](https://www.ssen.co.uk/about-ssen/contact-us/)
+- No vulnerability-disclosure policy or security.txt is published on any SSEN-controlled
+  host. The only security.txt reachable on an SSEN API host belongs to Opendatasoft, the
+  Transmission portal's platform vendor.

@@ -1,0 +1,119 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the SSEN Transmission Open Data Explore API
+  version: 1.0.0
+extends: openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json
+x-apievangelist:
+  generated: '2026-07-27'
+  method: generated
+  source: >-
+    Generated from the harvested Opendatasoft Explore v2.1 spec plus live probes
+    of https://ssentransmission.opendatasoft.com on 2026-07-27. The harvested
+    spec is the Opendatasoft platform's, served from SSEN's portal host — it
+    carries no SSEN provenance, no rate-limit documentation and no 404 response.
+    This overlay records those corrections without mutating the original.
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: Scottish and Southern Electricity Networks
+      x-apievangelist-provider-id: ssen
+      x-apievangelist-business-unit: SSEN Transmission
+      x-apievangelist-portal: https://ssentransmission.opendatasoft.com/
+      x-apievangelist-corporate-site: https://www.ssen-transmission.co.uk/
+      x-apievangelist-spec-authorship: >-
+        Platform-vendor spec (Opendatasoft Explore API v2.1) served from the
+        SSEN Transmission portal host. Not authored by SSEN. Recorded so it is
+        never counted as an SSEN-published API contract.
+      x-apievangelist-harvested: '2026-07-27'
+      x-apievangelist-harvest-source: https://ssentransmission.opendatasoft.com/api/explore/v2.1/swagger.json
+      x-apievangelist-dataset-count: 60
+      x-apievangelist-data-licence: CC BY 4.0
+      x-apievangelist-access: anonymous read; optional apikey query parameter for private datasets
+      x-apievangelist-sector: Electricity transmission (north of Scotland)
+      x-apievangelist-regulatory-driver: Ofgem Data Best Practice (Presumed Open, Open Data Triage)
+
+  - target: $.servers
+    update:
+      - url: https://ssentransmission.opendatasoft.com/api/explore/v2.1
+        description: >-
+          SSEN Transmission Open Data Portal, Explore API v2.1. Verified HTTP
+          200 anonymously on 2026-07-27 (total_count 60).
+      - url: https://ssentransmission.opendatasoft.com/api/explore/v2.0
+        description: >-
+          Prior Explore API version, still answering HTTP 200 on 2026-07-27. Not
+          declared in the vendor spec; recorded here because it affects client
+          lifecycle planning.
+
+  - target: $.info
+    update:
+      x-apievangelist-rate-limits:
+        observed: '2026-07-27'
+        headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Reset]
+        anonymous_limit: 100
+        window: calendar day (reset is an absolute UTC midnight timestamp)
+        artifact: rate-limits/ssen-rate-limits.yml
+      x-apievangelist-deprecation-signal:
+        header: ODS-Explore-API-Deprecation
+        exposed_via: Access-Control-Expose-Headers
+        note: >-
+          Platform-specific. No RFC 8594 Sunset/Deprecation header, and SSEN
+          publishes no deprecation policy.
+        artifact: lifecycle/ssen-lifecycle.yml
+      x-apievangelist-artifacts:
+        authentication: authentication/ssen-authentication.yml
+        conventions: conventions/ssen-conventions.yml
+        errors: errors/ssen-problem-types.yml
+        data_model: data-model/ssen-data-model.yml
+        conformance: conformance/ssen-conformance.yml
+        lifecycle: lifecycle/ssen-lifecycle.yml
+        rate_limits: rate-limits/ssen-rate-limits.yml
+        agentic_access: agentic-access/ssen-agentic-access.yml
+        mcp: mcp/ssen-mcp.yml
+        skills: skills/_index.yml
+
+  - target: $.paths['/catalog/datasets/{dataset_id}/records'].get
+    update:
+      x-apievangelist-note: >-
+        Records are schemaless in this spec (record.additionalProperties is
+        open). Call getDataset first and read fields[] to type the rows. Record
+        count per call is capped — use the exports endpoints for bulk.
+      x-apievangelist-undocumented-response:
+        status: 404
+        error_code: NotFoundResource
+        message_example: The requested dataset zzz-nope does not exist.
+        verified: live 2026-07-27
+        note: >-
+          404 is returned by the live API for an unknown dataset_id but is not
+          declared on any operation in the original spec.
+
+  - target: $.paths['/catalog/datasets'].get
+    update:
+      x-apievangelist-verified:
+        status: 200
+        date: '2026-07-27'
+        total_count: 60
+      x-apievangelist-undocumented-response:
+        status: 400
+        error_code: ODSQLSyntaxError
+        message_example: >-
+          ODSQL syntax exception: unexpected ( at position 16 in
+          invalid_function(). Clause(s) containing the error(s): select.
+        verified: live 2026-07-27
+        note: >-
+          The spec's bad_request example uses error_code ODSQLError; the live
+          API also returns ODSQLSyntaxError. Both are real.
+
+  - target: $.paths['/catalog/exports/dcat{dcat_ap_format}'].get
+    update:
+      x-apievangelist-standard: DCAT
+      x-apievangelist-note: >-
+        This is the operation that makes the SSEN Transmission catalog
+        interoperable with DCAT-AP harvesters. Verified HTTP 200 on 2026-07-27.
+
+  - target: $.components.securitySchemes.apikey
+    update:
+      x-apievangelist-note: >-
+        Optional. All 60 SSEN Transmission datasets are public and read
+        anonymously; the key is only needed for private datasets. Passing a key
+        in a query string is a weaker posture than a header or Authorization
+        bearer — noted, not endorsed.
