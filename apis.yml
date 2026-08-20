@@ -76,6 +76,11 @@ apis:
   baseURL: https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api
   tags:
   - Outages
+  - Real-Time
+  - Open Data
+  - Electricity
+  tags_raw:
+  - Outages
   - Real Time
   - Open Data
   - Electricity
@@ -98,6 +103,12 @@ apis:
   humanURL: https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/
   baseURL: https://nerda.opengrid.com/api
   tags:
+  - Real-Time
+  - Grid
+  - Power Flow
+  - Substations
+  - Flexibility
+  tags_raw:
   - Real Time
   - Grid
   - Power Flow
