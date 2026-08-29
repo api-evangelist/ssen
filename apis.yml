@@ -24,6 +24,17 @@ description: Scottish and Southern Electricity Networks (SSEN) is the SSE plc el
   visibly — it became the first DNO to publish full smart meter half-hourly consumption
   data, aggregated to no fewer than five properties per LV feeder, and attaches published
   Open Data Triage records to its datasets.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.ssen.co.uk/apple-touch-icon.png
 tags:
 - Energy
