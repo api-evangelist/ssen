@@ -177,6 +177,8 @@ apis:
   humanURL: https://data.ssen.co.uk/
   baseURL: https://data-api.ssen.co.uk/api/3/action
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
