@@ -2,20 +2,7 @@ openapi: 3.2.0
 info:
   title: Explore Dataset API
   version: v2.1
-  description: 'The Opendatasoft Explore API v2 is organized around REST. It provides access to all the data available through the platform in a coherent, hierarchical way.
-
-
-    - Only the HTTP `GET` method is supported.
-
-    - All API endpoints return JSON.
-
-    - Endpoints are organized in a hierarchical way describing the relative relationship between objects.
-
-    - All responses contain a list of links allowing easy and relevant navigation through the API endpoints.
-
-    - All endpoints use the [Opendatasoft Query Language (ODSQL)](https://help.huwise.com/apis/ods-explore-v2/#section/Opendatasoft-Query-Language-(ODSQL)). This means that, most of the time, parameters work the same way for all endpoints.
-
-    - While the `records` endpoint is subject to a [limited number of returned records](https://help.huwise.com/apis/ods-explore-v2/#tag/Dataset/operation/getRecords), the `exports` endpoint has no limitations.'
+  description: The Opendatasoft Explore API v2 is organized around REST.
   contact:
     email: support@opendatasoft.com
   license:
@@ -268,9 +255,7 @@ paths:
       - Dataset
       description: 'Enumerates facet values for records and returns a list of values for each facet.
 
-        Can be used to implement guided navigation in large result sets.
-
-        '
+        Can be used to implement guided navigation in large result sets.'
       parameters:
       - $ref: '#/components/parameters/dataset_id'
       - $ref: '#/components/parameters/where'
@@ -312,9 +297,7 @@ paths:
       operationId: getDatasetAttachments
       tags:
       - Dataset
-      description: 'Returns a list of all available attachments for a dataset.
-
-        '
+      description: Returns a list of all available attachments for a dataset.
       parameters:
       - $ref: '#/components/parameters/dataset_id'
       responses:
@@ -350,9 +333,7 @@ paths:
       operationId: getRecord
       tags:
       - Dataset
-      description: 'Reads a single dataset record based on its identifier.
-
-        '
+      description: Reads a single dataset record based on its identifier.
       parameters:
       - $ref: '#/components/parameters/dataset_id'
       - $ref: '#/components/parameters/record_id'
@@ -379,6 +360,28 @@ paths:
           description: Internal Server Error
 components:
   parameters:
+    use_labels:
+      name: use_labels
+      in: query
+      description: 'If set to `true`, this parameter will make exports output the label of each field rather than its name.
+
+
+        This parameter only makes sense for formats that contain a list of the fields in their output.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    dataset_id:
+      name: dataset_id
+      in: path
+      description: 'The identifier of the dataset to be queried.
+
+
+        You can find it in the "Information" tab of the dataset page or in the dataset URL, right after `/datasets/`.'
+      required: true
+      schema:
+        type: string
     order_by:
       name: order_by
       in: query
@@ -393,13 +396,108 @@ components:
       explode: false
       schema:
         type: string
-    record_id:
-      name: record_id
-      in: path
-      required: true
+    lang:
+      name: lang
+      in: query
+      description: 'A language value.
+
+
+        If specified, the `lang` value override the default language, which is "fr".
+
+        The language is used to format string, for example in the `date_format` function.'
       schema:
         type: string
-      description: Record identifier
+        enum:
+        - en
+        - fr
+        - nl
+        - pt
+        - it
+        - ar
+        - de
+        - es
+        - ca
+        - eu
+        - sv
+      style: form
+    include_app_metas:
+      name: include_app_metas
+      in: query
+      description: 'If set to `true`, this parameter will add application metadata to the response.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    limit:
+      name: limit
+      in: query
+      description: "Number of items to return.\n\nTo use with the `offset` parameter to implement pagination.\n\nThe maximum possible value depends on whether the query contains a `group_by` clause or not.\n\nFor a query **without** a `group_by`:\n  - the maximum value for `limit` is 100,\n  - `offset+limit` should be less than 10000\n\nFor a query **with** a `group_by`:\n  - the maximum value for `limit` is 20000,\n  - `offset+limit` should be less than 20000\n\n**Note:** If you need more results, please use the /exports endpoint.\n"
+      schema:
+        maximum: 100
+        minimum: -1
+        type: integer
+        default: 10
+    where:
+      name: where
+      in: query
+      description: 'A `where` filter is a text expression performing a simple full-text search that can also include logical operations
+
+        (NOT, AND, OR...) and lots of other functions to perform complex and precise search operations.
+
+
+        For more information, see [Opendatasoft Query Language (ODSQL)](<https://help.huwise.com/apis/ods-explore-v2/#section/Opendatasoft-Query-Language-(ODSQL)/Where-clause>) reference documentation.'
+      schema:
+        type: string
+    compressed:
+      name: compressed
+      in: query
+      description: 'If set to `true`, this parameter can compress the output file of a specific export format with GZIP, e.g. `.csv.gzip`.
+
+        '
+      required: false
+      schema:
+        type: boolean
+        default: false
+    select:
+      name: select
+      in: query
+      description: "Examples:\n- `select=size` - Example of select, which only return the \"size\" field.\n- `select=size * 2 as bigger_size` - Example of a complex expression with a label, which returns a new field named \"bigger_size\" and containing the double of size field value.\n- `select=dataset_id, fields` - Example of a select in catalog ODSQL query to only retrieve dataset_id and schema of datasets.\n\nA select expression can be used to add, remove or change the fields to return.\nAn expression can be:\n  - a wildcard ('*'): all fields are returned.\n  - A field name: only the specified field is returned.\n  - An include/exclude function: All fields matching the include or exclude expression are included or excluded. This expression can contain wildcard.\n  - A complex expression. The result of the expression is returned. A label can be set for this expression, and in that case, the field will be named after this label."
+      schema:
+        type: string
+    group_by:
+      name: group_by
+      in: query
+      description: "Example: `group_by=city_field as city`\n\nA group by expression defines a grouping function for an aggregation.\nIt can be:\n - a field name: group result by each value of this field\n - a range function: group result by range\n - a date function: group result by date\n\nIt is possible to specify a custom name with the 'as name' notation."
+      style: form
+      explode: false
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      description: 'Index of the first item to return (starting at 0).
+
+
+        To use with the `limit` parameter to implement pagination.
+
+
+        **Note:** the maximum value depends on the type of query, see the note on `limit` for the details
+
+        '
+      schema:
+        minimum: 0
+        type: integer
+        default: 0
+    epsg:
+      name: epsg
+      in: query
+      description: 'This parameter sets the EPSG code to project shapes into for formats that support geometric features.
+
+        '
+      schema:
+        type: integer
+        default: 4326
     refine:
       name: refine
       in: query
@@ -422,6 +520,19 @@ components:
       explode: true
       schema:
         type: string
+    limit_export:
+      name: limit
+      in: query
+      description: 'Number of items to return in export.
+
+
+        Use -1 (default) to retrieve all records
+
+        '
+      schema:
+        minimum: -1
+        type: integer
+        default: -1
     facet:
       name: facet
       in: query
@@ -430,45 +541,6 @@ components:
       explode: true
       schema:
         type: string
-    select:
-      name: select
-      in: query
-      description: "Examples:\n- `select=size` - Example of select, which only return the \"size\" field.\n- `select=size * 2 as bigger_size` - Example of a complex expression with a label, which returns a new field named \"bigger_size\" and containing the double of size field value.\n- `select=dataset_id, fields` - Example of a select in catalog ODSQL query to only retrieve dataset_id and schema of datasets.\n\nA select expression can be used to add, remove or change the fields to return.\nAn expression can be:\n  - a wildcard ('*'): all fields are returned.\n  - A field name: only the specified field is returned.\n  - An include/exclude function: All fields matching the include or exclude expression are included or excluded. This expression can contain wildcard.\n  - A complex expression. The result of the expression is returned. A label can be set for this expression, and in that case, the field will be named after this label."
-      schema:
-        type: string
-    where:
-      name: where
-      in: query
-      description: 'A `where` filter is a text expression performing a simple full-text search that can also include logical operations
-
-        (NOT, AND, OR...) and lots of other functions to perform complex and precise search operations.
-
-
-        For more information, see [Opendatasoft Query Language (ODSQL)](<https://help.huwise.com/apis/ods-explore-v2/#section/Opendatasoft-Query-Language-(ODSQL)/Where-clause>) reference documentation.'
-      schema:
-        type: string
-    use_labels:
-      name: use_labels
-      in: query
-      description: 'If set to `true`, this parameter will make exports output the label of each field rather than its name.
-
-
-        This parameter only makes sense for formats that contain a list of the fields in their output.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    compressed:
-      name: compressed
-      in: query
-      description: 'If set to `true`, this parameter can compress the output file of a specific export format with GZIP, e.g. `.csv.gzip`.
-
-        '
-      required: false
-      schema:
-        type: boolean
-        default: false
     timezone:
       name: timezone
       in: query
@@ -495,55 +567,6 @@ components:
         Europe/Berlin:
           summary: Berlin timezone
           value: Europe/Berlin
-    include_app_metas:
-      name: include_app_metas
-      in: query
-      description: 'If set to `true`, this parameter will add application metadata to the response.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    dataset_id:
-      name: dataset_id
-      in: path
-      description: 'The identifier of the dataset to be queried.
-
-
-        You can find it in the "Information" tab of the dataset page or in the dataset URL, right after `/datasets/`.'
-      required: true
-      schema:
-        type: string
-    group_by:
-      name: group_by
-      in: query
-      description: "Example: `group_by=city_field as city`\n\nA group by expression defines a grouping function for an aggregation.\nIt can be:\n - a field name: group result by each value of this field\n - a range function: group result by range\n - a date function: group result by date\n\nIt is possible to specify a custom name with the 'as name' notation."
-      style: form
-      explode: false
-      schema:
-        type: string
-    limit_export:
-      name: limit
-      in: query
-      description: 'Number of items to return in export.
-
-
-        Use -1 (default) to retrieve all records
-
-        '
-      schema:
-        minimum: -1
-        type: integer
-        default: -1
-    limit:
-      name: limit
-      in: query
-      description: "Number of items to return.\n\nTo use with the `offset` parameter to implement pagination.\n\nThe maximum possible value depends on whether the query contains a `group_by` clause or not.\n\nFor a query **without** a `group_by`:\n  - the maximum value for `limit` is 100,\n  - `offset+limit` should be less than 10000\n\nFor a query **with** a `group_by`:\n  - the maximum value for `limit` is 20000,\n  - `offset+limit` should be less than 20000\n\n**Note:** If you need more results, please use the /exports endpoint.\n"
-      schema:
-        maximum: 100
-        minimum: -1
-        type: integer
-        default: 10
     exclude:
       name: exclude
       in: query
@@ -567,15 +590,20 @@ components:
       explode: true
       schema:
         type: string
-    epsg:
-      name: epsg
-      in: query
-      description: 'This parameter sets the EPSG code to project shapes into for formats that support geometric features.
-
-        '
+    record_id:
+      name: record_id
+      in: path
+      required: true
       schema:
-        type: integer
-        default: 4326
+        type: string
+      description: Record identifier
+    format-datasets:
+      name: format
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/enum-format-datasets'
+      style: simple
     include_links:
       name: include_links
       in: query
@@ -585,153 +613,6 @@ components:
       schema:
         type: boolean
         default: false
-    offset:
-      name: offset
-      in: query
-      description: 'Index of the first item to return (starting at 0).
-
-
-        To use with the `limit` parameter to implement pagination.
-
-
-        **Note:** the maximum value depends on the type of query, see the note on `limit` for the details
-
-        '
-      schema:
-        minimum: 0
-        type: integer
-        default: 0
-    format-datasets:
-      name: format
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/enum-format-datasets'
-      style: simple
-    lang:
-      name: lang
-      in: query
-      description: 'A language value.
-
-
-        If specified, the `lang` value override the default language, which is "fr".
-
-        The language is used to format string, for example in the `date_format` function.'
-      schema:
-        type: string
-        enum:
-        - en
-        - fr
-        - nl
-        - pt
-        - it
-        - ar
-        - de
-        - es
-        - ca
-        - eu
-        - sv
-      style: form
-  schemas:
-    facet_enumeration:
-      type: object
-      properties:
-        name:
-          type: string
-        facets:
-          type: array
-          items:
-            $ref: '#/components/schemas/facet_value_enumeration'
-    enum-format-datasets:
-      type: string
-      enum:
-      - csv
-      - fgb
-      - geojson
-      - gpx
-      - json
-      - jsonl
-      - jsonld
-      - kml
-      - n3
-      - ov2
-      - parquet
-      - rdfxml
-      - shp
-      - turtle
-      - xlsx
-    facet_value_enumeration:
-      type: object
-      properties:
-        name:
-          type: string
-        count:
-          type: integer
-        value:
-          type: string
-        state:
-          type: string
-    attachment:
-      type: object
-      properties:
-        href:
-          type: string
-        metas:
-          type: object
-          properties:
-            mime-type:
-              type: string
-            title:
-              type: string
-            url:
-              type: string
-            id:
-              type: string
-    record:
-      type: object
-      properties:
-        _id:
-          type: string
-        _timestamp:
-          type: string
-          format: dateTime
-        _size:
-          type: integer
-          format: int64
-        _links:
-          type: array
-          items:
-            $ref: '#/components/schemas/links'
-      additionalProperties:
-        type: any
-    links:
-      type: object
-      properties:
-        href:
-          type: string
-          format: uri
-        rel:
-          type: string
-          enum:
-          - self
-          - first
-          - last
-          - next
-          - dataset
-          - catalog
-    records:
-      type: object
-      properties:
-        total_count:
-          type: integer
-        _links:
-          type: array
-          items:
-            $ref: '#/components/schemas/links'
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/record'
   examples:
     facets:
       value:
@@ -782,6 +663,23 @@ components:
         admin1_code: WAL
         admin2_code: WNA
         population: 1492
+    group_by_country-v2.1:
+      value:
+        results:
+        - count: 16729
+          cou_name_en: United States
+        - count: 9945
+          cou_name_en: Italy
+        - count: 8981
+          cou_name_en: Mexico
+    attachments:
+      value:
+        links: []
+        attachments:
+        - href: https://documentation-resources.opendatasoft.com/api/v2/catalog/datasets/geonames-all-cities-with-a-population-1000/attachments/cities1000_zip
+          metas:
+            mime-type: application/zip
+            title: cities1000.zip
     records-v2.1:
       value:
         total_count: 137611
@@ -835,45 +733,7 @@ components:
           admin2_code: '80'
           admin4_code: '80706'
           population: 1781
-    group_by_country-v2.1:
-      value:
-        results:
-        - count: 16729
-          cou_name_en: United States
-        - count: 9945
-          cou_name_en: Italy
-        - count: 8981
-          cou_name_en: Mexico
-    attachments:
-      value:
-        links: []
-        attachments:
-        - href: https://documentation-resources.opendatasoft.com/api/v2/catalog/datasets/geonames-all-cities-with-a-population-1000/attachments/cities1000_zip
-          metas:
-            mime-type: application/zip
-            title: cities1000.zip
   responses:
-    bad_request:
-      description: Bad Request
-      content:
-        application/json; charset=utf-8:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                minLength: 1
-              error_code:
-                type: string
-                minLength: 1
-            required:
-            - message
-            - error_code
-          examples:
-            invalid_odsql:
-              value:
-                message: 'ODSQL query is malformed: invalid_function() Clause(s) containing the error(s): select.'
-                error_code: ODSQLError
     quota:
       description: Too many requests
       content:
@@ -908,6 +768,127 @@ components:
                 limit_time_unit: day
                 call_limit: 10000
                 error: Too many requests on the domain. Please contact the domain administrator.
+    bad_request:
+      description: Bad Request
+      content:
+        application/json; charset=utf-8:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                minLength: 1
+              error_code:
+                type: string
+                minLength: 1
+            required:
+            - message
+            - error_code
+          examples:
+            invalid_odsql:
+              value:
+                message: 'ODSQL query is malformed: invalid_function() Clause(s) containing the error(s): select.'
+                error_code: ODSQLError
+  schemas:
+    records:
+      type: object
+      properties:
+        total_count:
+          type: integer
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/links'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/record'
+    record:
+      type: object
+      properties:
+        _id:
+          type: string
+        _timestamp:
+          type: string
+          format: dateTime
+        _size:
+          type: integer
+          format: int64
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/links'
+      additionalProperties:
+        type: any
+    links:
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+        rel:
+          type: string
+          enum:
+          - self
+          - first
+          - last
+          - next
+          - dataset
+          - catalog
+    enum-format-datasets:
+      type: string
+      enum:
+      - csv
+      - fgb
+      - geojson
+      - gpx
+      - json
+      - jsonl
+      - jsonld
+      - kml
+      - n3
+      - ov2
+      - parquet
+      - rdfxml
+      - shp
+      - turtle
+      - xlsx
+    attachment:
+      type: object
+      properties:
+        href:
+          type: string
+        metas:
+          type: object
+          properties:
+            mime-type:
+              type: string
+            title:
+              type: string
+            url:
+              type: string
+            id:
+              type: string
+    facet_value_enumeration:
+      type: object
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+        value:
+          type: string
+        state:
+          type: string
+    facet_enumeration:
+      type: object
+      properties:
+        name:
+          type: string
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/facet_value_enumeration'
   securitySchemes:
     apikey:
       type: apiKey
