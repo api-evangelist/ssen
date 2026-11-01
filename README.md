@@ -1,4 +1,4 @@
-# Scottish and Southern Electricity Networks (ssen)
+# Scottish and Southern Electricity Networks
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,135 +64,129 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Scottish and Southern Electricity Networks (SSEN) is the SSE plc electricity networks business in the United Kingdom, operating the poles-and-wires layer rather than selling energy. SSEN Distribution is the licensed Distribution Network Operator for two GB licence areas — Scottish Hydro Electric Power Distribution (SHEPD) in the north of Scotland and Southern Electric Power Distribution (SEPD) in central southern England — serving over 3.9 million homes and businesses, while SSEN Transmission owns and operates the high-voltage transmission system for the north of Scotland. Its API posture is the classic network-distributor split — grid and market data are genuinely open, consumer data is not offered at all.
+Scottish and Southern Electricity Networks (SSEN) is the SSE plc electricity networks business in the United Kingdom, operating the poles-and-wires layer rather than selling energy. SSEN Distribution is the licensed Distribution Network Operator for two GB licence areas — Scottish Hydro Electric Power Distribution (SHEPD) in the north of Scotland and Southern Electric Power Distribution (SEPD) in central southern England — serving over 3.9 million homes and businesses, while SSEN Transmission owns and operates the high-voltage transmission system for the north of Scotland. Its API posture is the classic network-distributor split — grid and market data are genuinely open, consumer data is not offered at all. SSEN runs a CKAN open data portal whose anonymous Action API serves 45 datasets, an anonymous real-time outage API behind Power Track, a key-gated near-real-time power-flow API (NeRDA) covering EHV/HV/LV networks, and an Opendatasoft Explore API over 60 transmission datasets. There is no consumer data-portability mandate in Great Britain equivalent to the Australian Consumer Data Right or Ontario's Green Button regulation, and SSEN publishes no API through which a third party can obtain an individual customer's usage or billing data. What Britain mandated instead is infrastructure and disclosure — smart meter traffic runs through the licensed Smart DCC monopoly, and Ofgem's Data Best Practice licence condition under RIIO-ED2 obliges network licensees to treat data assets as Presumed Open subject to Open Data Triage. SSEN implements that obligation visibly — it became the first DNO to publish full smart meter half-hourly consumption data, aggregated to no fewer than five properties per LV feeder, and attaches published Open Data Triage records to its datasets.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/ssen/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/ssen/refs/heads/main/apis.yml)
+**Areas:** Energy · United Kingdom · Utilities · Electricity · Grid · Distribution Network Operator · Transmission · Smart Metering · Open Data · Flexibility · Renewables · DER
 
-## Tags
+## Scottish and Southern Electricity Networks on APIs.io
 
-- Energy
-- United Kingdom
-- Utilities
-- Electricity
-- Grid
-- Distribution Network Operator
-- Transmission
-- Smart Metering
-- Open Data
-- Flexibility
-- Renewables
-- DER
+Everything profiled for Scottish and Southern Electricity Networks is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/ssen/](https://apis.io/providers/ssen/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (5)
 
-- **Created:** 2026-07-27
-- **Modified:** 2026-07-27
+- [SSEN Distribution Data Portal API](https://apis.io/apis/ssen/ssen-distribution-data-portal-api/) — The public CKAN 2.10.10 Action API behind the SSEN Distribution Data Portal, serving 45 open datasets covering substations, LV feeder smart meter…
+- [SSEN Power Track Real Time Outage API](https://apis.io/apis/ssen/ssen-power-track-real-time-outage-api/) — Anonymous JSON API behind the SSEN Power Track map, returning planned and unplanned outages on the SSEN Distribution network with fault reference, type,…
+- [SSEN NeRDA (Near Real-time Data Access) API](https://apis.io/apis/ssen/ssen-nerda-api/) — Near real-time power flow data from SSEN Distribution's EHV, HV and LV networks, drawn from SCADA PowerOn, LV monitoring equipment, the load model…
+- [Scottish and Southern Electricity Networks Catalog API](https://apis.io/apis/ssen/ssen-catalog-api/) — API to enumerate datasets
+- [Scottish and Southern Electricity Networks Dataset API](https://apis.io/apis/ssen/ssen-dataset-api/) — API to work on records
 
-## APIs
+### Published properties
 
-### SSEN Distribution Data Portal API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-The public CKAN 2.10.10 Action API behind the SSEN Distribution Data Portal, serving 45 open datasets covering substations, LV feeder smart meter half-hourly usage, the Embedded Capacity Register, flexibility market registers, Distribution Future Energy Scenarios, licence area boundaries and Long Term Development Statements. Verified anonymously — no key, no registration. Most datasets carry a CC BY 4.0 licence.
+#### MCP servers (1)
 
-- **Human URL:** [https://data.ssen.co.uk/](https://data.ssen.co.uk/)
-- **Base URL:** `https://data-api.ssen.co.uk/api/3/action`
+Model Context Protocol servers that expose the API to agents.
 
-#### Tags
+- [ssen-transmission-open-data](https://apis.io/servers/ssen/ssen-transmission-open-data/)
 
-- Open Data
-- CKAN
-- Catalog
-- Electricity
-- Grid
+#### Agentic access (1)
 
-#### Properties
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- [Documentation](https://data.ssen.co.uk/)
-- [API Reference](https://data-api.ssen.co.uk/api/3/action/help_show?name=package_search)
-- [Website](https://www.ssen.co.uk/)
+- [Ssen Agentic Access](https://apis.io/agentic-access/ssen/ssen-agentic-access/)
 
-### SSEN Power Track Real Time Outage API
+#### Collections (1)
 
-Anonymous JSON API behind the SSEN Power Track map, returning planned and unplanned outages on the SSEN Distribution network with fault reference, type, latitude/longitude, estimated restoration time and affected postcodes, plus a per-fault lookup by reference. Published as an API resource on the Real Time Outage Dataset under CC BY 4.0 and verified live with no credentials.
+Postman and Open Collection request collections.
 
-- **Human URL:** [https://data.ssen.co.uk/@ssen-distribution/realtime_outage_dataset](https://data.ssen.co.uk/@ssen-distribution/realtime_outage_dataset)
-- **Base URL:** `https://external.distribution.prd.ssen.co.uk/opendataportal-prd/v4/api`
+- [Explore API](https://apis.io/collections/ssen/open-ssen-transmission-opendatasoft-explore-v2/)
 
-#### Tags
+#### Overlays (1)
 
-- Outages
-- Real Time
-- Open Data
-- Electricity
+OpenAPI overlays, including conversational phrasing for each operation.
 
-#### Properties
+- [Ssen Transmission Opendatasoft Explore V2.1 Overlay](https://apis.io/overlays/ssen/ssen-transmission-opendatasoft-explore-v2.1-overlay/)
 
-- [Documentation](https://data.ssen.co.uk/@ssen-distribution/realtime_outage_dataset)
-- [Documentation](https://powertrack.ssen.co.uk/powertrack)
+#### Security (3)
 
-### SSEN NeRDA (Near Real-time Data Access) API
+Authentication, trust centre, and vulnerability disclosure.
 
-Near real-time power flow data from SSEN Distribution's EHV, HV and LV networks, drawn from SCADA PowerOn, LV monitoring equipment, the load model forecasting tool, the connectivity model and the Long Term Development Statement. The documented endpoints are a static substation endpoint per licence area (`nerdastatic-SEPD`, `nerdastatic-SHEPD`) and time-series endpoints (`nerdart_after`, `nerdart_between`) queried by `nerda_measurement_id` and ISO 8601 timestamps. Access requires a free SSEN account, acceptance of the portal terms and conditions, and an API key generated in the portal API console; anonymous calls to the documented endpoints return 404.
+- [Ssen Authentication](https://apis.io/security/ssen/ssen-authentication/)
+- [Ssen Domain Security](https://apis.io/security/ssen/ssen-domain-security/)
+- [Ssen Vulnerability Disclosure](https://apis.io/security/ssen/ssen-vulnerability-disclosure/)
 
-- **Human URL:** [https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/](https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/)
-- **Base URL:** `https://nerda.opengrid.com/api`
+#### Rate limits (1)
 
-#### Tags
+Published request limits.
 
-- Real Time
-- Grid
-- Power Flow
-- Substations
-- Flexibility
+- [Ssen Rate Limits](https://apis.io/rate-limits/ssen/ssen-rate-limits/)
 
-#### Properties
+## Where to find this API
 
-- [Documentation](https://www.ssen.co.uk/our-services/tools-and-maps/near-real-time-data-access-nerda-portal/)
-- [API Reference](https://data-api.ssen.co.uk/dataset/195500da-46ae-4698-939c-f7f4293f7b43/resource/c90db7e1-c666-4092-998c-b71d782b16db/download/nerda-api-guide.pdf)
-- [Documentation](https://data.ssen.co.uk/@ssen-distribution/nerda_opengrid_dashboard)
-- [Portal](https://nerda.ssen.co.uk/)
-
-### SSEN Transmission Open Data Explore API
-
-The Opendatasoft Explore API v2.1 served from the SSEN Transmission Open Data Portal, exposing 60 CC BY 4.0 transmission datasets — Electricity Ten Year Statement circuits and fault levels, ground investigation points and related network records — through 16 read-only GET endpoints for catalog search, dataset records, facets and exports (CSV, Parquet, GPX, DCAT). Verified anonymously; an optional `apikey` query parameter exists for private datasets.
-
-- **Human URL:** [https://ssentransmission.opendatasoft.com/](https://ssentransmission.opendatasoft.com/)
-- **Base URL:** `https://ssentransmission.opendatasoft.com/api/explore/v2.1`
-
-#### Tags
-
-- Open Data
-- Transmission
-- Catalog
-- Scotland
-
-#### Properties
-
-- [OpenAPI](openapi/ssen-transmission-opendatasoft-explore-v2.1-openapi.json) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Documentation](https://ssentransmission.opendatasoft.com/)
-- [API Reference](https://ssentransmission.opendatasoft.com/api-console/explore/v2.1/)
-- [Website](https://www.ssen-transmission.co.uk/)
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.ssen.co.uk/)
 - [Documentation](https://data.ssen.co.uk/)
-- [Portal](https://data.ssen.co.uk/)
-- [Portal](https://ssentransmission.opendatasoft.com/)
-- [Portal](https://nerda.ssen.co.uk/)
-- [Website](https://www.ssen-transmission.co.uk/)
-- [Website](https://ssen-innovation.co.uk/)
-- [LinkedIn](https://www.linkedin.com/company/ssen)
+- [Getting started](https://raw.githubusercontent.com/datopian/ssen-content/refs/heads/dev/assets/Portal_Guide.pdf)
+- [Sign up](https://data.ssen.co.uk/auth/signup)
+- [Support](https://www.ssen.co.uk/about-ssen/contact-us/)
+- [Blog](https://www.ssen.co.uk/news-views/)
+- [Security](https://ssentransmission.opendatasoft.com/.well-known/security.txt)
+- [Terms of service](https://data.ssen.co.uk/terms-and-conditions)
+- [Privacy policy](https://www.ssen.co.uk/privacy-notice/)
 
-## Regulatory Posture
+## API Evangelist rating
 
-- **Mandate regime:** smart-meter-infrastructure — Great Britain mandated the infrastructure (the licensed Smart DCC monopoly under the Smart Energy Code) and the disclosure (Ofgem Data Best Practice "Presumed Open" licence condition under RIIO-ED2). There is no GB consumer data right for energy.
-- **Mandate status:** live-implemented, for those obligations only. Verified through published Open Data Triage record PDFs attached to SSEN datasets, CC BY 4.0 licensing returned by the CKAN API, and the live Smart Meter LV Feeder Usage dataset aggregated to no fewer than five properties.
-- **Data standard:** no consumer data standard reference found. No Green Button/ESPI, no CDR Consumer Data Standards, no IEEE 2030.5, OpenADR or OCPP/OCPI. ENA Open Networks Embedded Capacity Register format and DCAT catalog exports are present.
-- **Consumer data API:** none published.
-- **Market/grid data open:** yes — 45 Distribution datasets and 60 Transmission datasets, anonymously queryable.
-- **Access gate:** self-serve. Three of the four APIs need no credential at all; NeRDA needs a free account, T&C acceptance and a self-generated API key.
+**Kin Score 47.7** — developing · rubric 0.25.0 · scored 2026-10-23
 
-## Maintainers
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 51.4 |
+| Contract governance | 4.5 |
+| Operational transparency | 31.6 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 34.2 |
 
-- Kin Lane — kin@apievangelist.com
+**Agent readiness 37.3** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | na |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | na |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | paginated |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 32.0** — Energy & Utilities
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/ssen/](https://apis.io/providers/ssen/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Scottish and Southern Electricity Networks: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/ssen/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
